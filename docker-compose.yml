@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: sge-postgres
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_DB=sgebd
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123qwe
+    volumes:
+      - ./basededatos/init.sh:/docker-entrypoint-initdb.d/init.sh
+      - ./basededatos:/basededatos
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./partelogica
+      dockerfile: Dockerfile
+    container_name: sge-backend
+    restart: always
+    ports:
+      - '3000:3000'
+    environment:
+      - PORT=3000
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=123qwe
+      - DB_DATABASE=sgebd
+    volumes:
+      - ./partelogica:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./partevisual
+      dockerfile: Dockerfile
+    container_name: sge-frontend
+    restart: always
+    ports:
+      - '4200:4200'
+    volumes:
+      - ./partevisual:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

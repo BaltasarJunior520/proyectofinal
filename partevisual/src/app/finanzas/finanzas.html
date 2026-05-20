@@ -1,0 +1,552 @@
+<!-- ══════════════════════════════════════════════════════════════════
+     FINANZAS / CAJA — Premium Dark-Mode View
+     ══════════════════════════════════════════════════════════════════ -->
+<div class="space-y-6 animate-fade-in">
+
+  <!-- ── Toast: Success ──────────────────────────────────────────── -->
+  @if (successMessage()) {
+    <div class="fixed top-6 right-6 z-50 animate-slide-up">
+      <div class="flex items-center gap-3 px-5 py-3.5 rounded-xl bg-green-500/15 border border-green-500/25 backdrop-blur-lg shadow-2xl shadow-green-500/10">
+        <div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+        <span class="text-sm font-semibold text-green-300">{{ successMessage() }}</span>
+        <button (click)="successMessage.set('')" class="ml-2 text-green-400/60 hover:text-green-300 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- ── Toast: Error ────────────────────────────────────────────── -->
+  @if (errorMessage()) {
+    <div class="fixed top-6 right-6 z-50 animate-slide-up">
+      <div class="flex items-center gap-3 px-5 py-3.5 rounded-xl bg-red-500/15 border border-red-500/25 backdrop-blur-lg shadow-2xl shadow-red-500/10">
+        <div class="w-2 h-2 rounded-full bg-red-400 animate-pulse"></div>
+        <span class="text-sm font-semibold text-red-300">{{ errorMessage() }}</span>
+        <button (click)="errorMessage.set('')" class="ml-2 text-red-400/60 hover:text-red-300 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- ── Page Header ─────────────────────────────────────────────── -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="space-y-1">
+      <h1 class="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-brand-300">
+        Caja &amp; Finanzas
+      </h1>
+      <p class="text-sm text-dark-400">Gestión de pagos, facturación y caja general del sistema</p>
+    </div>
+
+    <!-- New Pago Button (Pagos tab only) -->
+    @if (activeTab() === 'pagos') {
+      <button
+        (click)="openCreatePago()"
+        class="flex items-center gap-2.5 px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white text-sm font-semibold rounded-xl transition-all duration-200 hover:scale-[1.02] hover:shadow-lg hover:shadow-brand-500/25 active:scale-[0.98]">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+        </svg>
+        Nuevo Pago
+      </button>
+    }
+  </div>
+
+  <!-- ── Tab Switcher ────────────────────────────────────────────── -->
+  <div class="glass-panel rounded-2xl p-1.5 flex gap-1 w-fit">
+    <button
+      (click)="switchTab('pagos')"
+      [class]="activeTab() === 'pagos'
+        ? 'px-6 py-2.5 text-sm font-semibold rounded-xl transition-all duration-300 bg-brand-500/15 text-brand-400 border border-brand-500/25 shadow-lg shadow-brand-500/10'
+        : 'px-6 py-2.5 text-sm font-semibold rounded-xl transition-all duration-300 text-dark-400 hover:text-dark-200 border border-transparent hover:bg-dark-800/50'">
+      <span class="flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"/>
+        </svg>
+        Pagos
+      </span>
+    </button>
+    <button
+      (click)="switchTab('facturas')"
+      [class]="activeTab() === 'facturas'
+        ? 'px-6 py-2.5 text-sm font-semibold rounded-xl transition-all duration-300 bg-brand-500/15 text-brand-400 border border-brand-500/25 shadow-lg shadow-brand-500/10'
+        : 'px-6 py-2.5 text-sm font-semibold rounded-xl transition-all duration-300 text-dark-400 hover:text-dark-200 border border-transparent hover:bg-dark-800/50'">
+      <span class="flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
+        </svg>
+        Facturas
+      </span>
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       PAGOS TAB
+       ══════════════════════════════════════════════════════════════ -->
+  @if (activeTab() === 'pagos') {
+    <div class="space-y-6 animate-fade-in">
+
+      <!-- ── Summary Cards ─────────────────────────────────────── -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Total Recaudado -->
+        <div class="glass-panel p-6 rounded-2xl flex items-center justify-between group hover:border-brand-500/30 hover:scale-[1.02] transition-all duration-300">
+          <div class="space-y-1.5">
+            <span class="text-xs font-semibold text-dark-400 uppercase tracking-wider">Total Recaudado</span>
+            <h3 class="text-3xl font-bold text-white tracking-tight">Bs. {{ formatCurrency(totalRecaudado()) }}</h3>
+            <p class="text-[10px] text-green-400 font-semibold tracking-wide flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clip-rule="evenodd"/>
+              </svg>
+              Ingresos acumulados
+            </p>
+          </div>
+          <div class="w-14 h-14 rounded-xl bg-green-500/10 text-green-400 flex items-center justify-center group-hover:bg-green-500/20 group-hover:text-green-300 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Número de Pagos -->
+        <div class="glass-panel p-6 rounded-2xl flex items-center justify-between group hover:border-brand-500/30 hover:scale-[1.02] transition-all duration-300">
+          <div class="space-y-1.5">
+            <span class="text-xs font-semibold text-dark-400 uppercase tracking-wider">Número de Pagos</span>
+            <h3 class="text-3xl font-bold text-white tracking-tight">{{ numeroPagos() }}</h3>
+            <p class="text-[10px] text-brand-400 font-semibold tracking-wide">Transacciones registradas</p>
+          </div>
+          <div class="w-14 h-14 rounded-xl bg-brand-500/10 text-brand-400 flex items-center justify-center group-hover:bg-brand-500/20 group-hover:text-brand-300 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Facturas Emitidas -->
+        <div class="glass-panel p-6 rounded-2xl flex items-center justify-between group hover:border-brand-500/30 hover:scale-[1.02] transition-all duration-300">
+          <div class="space-y-1.5">
+            <span class="text-xs font-semibold text-dark-400 uppercase tracking-wider">Facturas Emitidas</span>
+            <h3 class="text-3xl font-bold text-white tracking-tight">{{ facturas().length }}</h3>
+            <p class="text-[10px] text-purple-400 font-semibold tracking-wide">Documentos fiscales</p>
+          </div>
+          <div class="w-14 h-14 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center group-hover:bg-purple-500/20 group-hover:text-purple-300 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Pagos DataTable ───────────────────────────────────── -->
+      <div class="glass-panel rounded-2xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-white/5">
+          <h3 class="text-base font-semibold text-white flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-brand-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z"/>
+            </svg>
+            Registro de Pagos
+          </h3>
+        </div>
+        <app-data-table
+          [columns]="pagoColumns"
+          [data]="pagos()"
+          [loading]="loading()"
+          (rowClick)="viewPagoDetail($event)"
+          emptyMessage="No hay pagos registrados aún">
+        </app-data-table>
+      </div>
+    </div>
+  }
+
+  <!-- ══════════════════════════════════════════════════════════════
+       FACTURAS TAB
+       ══════════════════════════════════════════════════════════════ -->
+  @if (activeTab() === 'facturas') {
+    <div class="space-y-6 animate-fade-in">
+      <div class="glass-panel rounded-2xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-white/5">
+          <h3 class="text-base font-semibold text-white flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
+            </svg>
+            Registro de Facturas
+          </h3>
+        </div>
+        <app-data-table
+          [columns]="facturaColumns"
+          [data]="facturas()"
+          [loading]="loading()"
+          (rowClick)="viewFacturaDetail($event)"
+          emptyMessage="No hay facturas emitidas aún">
+        </app-data-table>
+      </div>
+    </div>
+  }
+
+  <!-- ══════════════════════════════════════════════════════════════
+       MODAL: Crear Pago
+       ══════════════════════════════════════════════════════════════ -->
+  <app-modal
+    [isOpen]="showPagoModal()"
+    title="Registrar Nuevo Pago"
+    size="md"
+    (closeModal)="closePagoModal()">
+
+    <div class="space-y-5">
+      <!-- Envío Selection -->
+      <div class="space-y-1.5">
+        <label class="block text-xs font-semibold text-dark-300 uppercase tracking-wider">Envío asociado *</label>
+        <select
+          class="glass-input w-full px-4 py-3 rounded-xl text-sm"
+          [ngModel]="formEnvioId()"
+          (ngModelChange)="formEnvioId.set($event)">
+          <option [ngValue]="null" disabled>Seleccionar envío...</option>
+          @for (envio of envios(); track envio.id) {
+            <option [ngValue]="envio.id">
+              #{{ envio.id }} — {{ envio.codigoEncomienda || envio.codigo || 'Envío ' + envio.id }}
+            </option>
+          }
+        </select>
+      </div>
+
+      <!-- Monto -->
+      <div class="space-y-1.5">
+        <label class="block text-xs font-semibold text-dark-300 uppercase tracking-wider">Monto (Bs.) *</label>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-dark-400 text-sm font-semibold">Bs.</span>
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            placeholder="0.00"
+            class="glass-input w-full pl-12 pr-4 py-3 rounded-xl text-sm"
+            [ngModel]="formMonto()"
+            (ngModelChange)="formMonto.set($event)">
+        </div>
+      </div>
+
+      <!-- Método de Pago -->
+      <div class="space-y-1.5">
+        <label class="block text-xs font-semibold text-dark-300 uppercase tracking-wider">Método de pago</label>
+        <div class="grid grid-cols-3 gap-2">
+          @for (metodo of metodoOptions; track metodo) {
+            <button
+              type="button"
+              (click)="formMetodo.set(metodo)"
+              [class]="formMetodo() === metodo
+                ? 'flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 border ' + getMetodoBadgeClasses(metodo) + ' ring-1 ring-offset-1 ring-offset-dark-900 ' + (metodo === 'Efectivo' ? 'ring-green-500/40' : metodo === 'QR' ? 'ring-purple-500/40' : 'ring-blue-500/40')
+                : 'flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 border border-white/5 bg-dark-800/50 text-dark-400 hover:bg-dark-800 hover:text-dark-200'">
+              @if (metodo === 'Efectivo') {
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"/>
+                </svg>
+              }
+              @if (metodo === 'QR') {
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5ZM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5ZM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5Z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75ZM6.75 16.5h.75v.75h-.75v-.75ZM16.5 6.75h.75v.75h-.75v-.75ZM13.5 13.5h.75v.75h-.75v-.75ZM13.5 19.5h.75v.75h-.75v-.75ZM19.5 13.5h.75v.75h-.75v-.75ZM19.5 19.5h.75v.75h-.75v-.75ZM16.5 16.5h.75v.75h-.75v-.75Z"/>
+                </svg>
+              }
+              @if (metodo === 'Tarjeta') {
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/>
+                </svg>
+              }
+              {{ metodo }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="border-t border-white/5"></div>
+
+      <!-- Factura Toggle -->
+      <div class="flex items-center justify-between">
+        <div class="space-y-0.5">
+          <span class="text-sm font-semibold text-white">Generar Factura</span>
+          <p class="text-xs text-dark-400">Emitir documento fiscal para este pago</p>
+        </div>
+        <button
+          type="button"
+          (click)="formIncluirFactura.set(!formIncluirFactura())"
+          [class]="formIncluirFactura()
+            ? 'relative w-12 h-7 rounded-full bg-brand-500 transition-all duration-300 shadow-lg shadow-brand-500/25'
+            : 'relative w-12 h-7 rounded-full bg-dark-700 transition-all duration-300'">
+          <span
+            [class]="formIncluirFactura()
+              ? 'absolute top-0.5 left-[22px] w-6 h-6 rounded-full bg-white shadow-md transition-all duration-300'
+              : 'absolute top-0.5 left-0.5 w-6 h-6 rounded-full bg-dark-400 shadow-md transition-all duration-300'">
+          </span>
+        </button>
+      </div>
+
+      <!-- Factura Fields (Conditional) -->
+      @if (formIncluirFactura()) {
+        <div class="space-y-4 p-4 rounded-xl bg-dark-900/50 border border-white/5 animate-fade-in">
+          <div class="flex items-center gap-2 mb-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
+            </svg>
+            <span class="text-xs font-semibold text-purple-400 uppercase tracking-wider">Datos de Factura</span>
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="block text-xs font-semibold text-dark-300 uppercase tracking-wider">N° Factura</label>
+            <input
+              type="text"
+              placeholder="Ej: FAC-001234"
+              class="glass-input w-full px-4 py-3 rounded-xl text-sm"
+              [ngModel]="formNumeroFactura()"
+              (ngModelChange)="formNumeroFactura.set($event)">
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-1.5">
+              <label class="block text-xs font-semibold text-dark-300 uppercase tracking-wider">NIT</label>
+              <input
+                type="text"
+                placeholder="Ej: 12345678"
+                class="glass-input w-full px-4 py-3 rounded-xl text-sm"
+                [ngModel]="formNit()"
+                (ngModelChange)="formNit.set($event)">
+            </div>
+            <div class="space-y-1.5">
+              <label class="block text-xs font-semibold text-dark-300 uppercase tracking-wider">Razón Social</label>
+              <input
+                type="text"
+                placeholder="Nombre o empresa"
+                class="glass-input w-full px-4 py-3 rounded-xl text-sm"
+                [ngModel]="formRazonSocial()"
+                (ngModelChange)="formRazonSocial.set($event)">
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Actions -->
+      <div class="flex justify-end gap-3 pt-2">
+        <button
+          type="button"
+          (click)="closePagoModal()"
+          class="px-5 py-2.5 text-sm font-semibold text-dark-300 hover:text-white bg-dark-800 hover:bg-dark-700 border border-white/5 rounded-xl transition-all duration-200">
+          Cancelar
+        </button>
+        <button
+          type="button"
+          (click)="savePago()"
+          [disabled]="loading()"
+          class="px-6 py-2.5 text-sm font-semibold text-white bg-brand-500 hover:bg-brand-600 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-brand-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+          @if (loading()) {
+            <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+          }
+          Registrar Pago
+        </button>
+      </div>
+    </div>
+  </app-modal>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       MODAL: Pago Detail
+       ══════════════════════════════════════════════════════════════ -->
+  <app-modal
+    [isOpen]="showPagoDetailModal()"
+    title="Detalle del Pago"
+    size="md"
+    (closeModal)="closePagoDetailModal()">
+
+    @if (selectedPago(); as pago) {
+      <div class="space-y-5">
+        <!-- Monto Hero -->
+        <div class="text-center py-5 px-6 rounded-2xl bg-gradient-to-br from-dark-800 to-dark-900 border border-white/5 relative overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-r from-brand-500/5 via-transparent to-purple-500/5"></div>
+          <div class="relative z-10">
+            <p class="text-xs font-semibold text-dark-400 uppercase tracking-widest mb-1">Monto del Pago</p>
+            <h2 class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-300 via-green-400 to-emerald-400">
+              Bs. {{ formatCurrency(pago.monto) }}
+            </h2>
+          </div>
+        </div>
+
+        <!-- Pago Details Grid -->
+        <div class="grid grid-cols-2 gap-4">
+          <div class="glass-panel p-4 rounded-xl space-y-1">
+            <span class="text-[10px] font-semibold text-dark-400 uppercase tracking-wider">Método</span>
+            <div>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border {{ getMetodoBadgeClasses(pago.metodo) }}">
+                @if (pago.metodo === 'Efectivo') {
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"/>
+                  </svg>
+                }
+                @if (pago.metodo === 'QR') {
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5Z"/>
+                  </svg>
+                }
+                @if (pago.metodo === 'Tarjeta') {
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/>
+                  </svg>
+                }
+                {{ pago.metodo }}
+              </span>
+            </div>
+          </div>
+
+          <div class="glass-panel p-4 rounded-xl space-y-1">
+            <span class="text-[10px] font-semibold text-dark-400 uppercase tracking-wider">Fecha</span>
+            <p class="text-sm font-semibold text-white">{{ formatDate(pago.fecha) }}</p>
+          </div>
+
+          <div class="glass-panel p-4 rounded-xl space-y-1">
+            <span class="text-[10px] font-semibold text-dark-400 uppercase tracking-wider">ID Pago</span>
+            <p class="text-sm font-semibold text-brand-400">#{{ pago.id }}</p>
+          </div>
+
+          <div class="glass-panel p-4 rounded-xl space-y-1">
+            <span class="text-[10px] font-semibold text-dark-400 uppercase tracking-wider">Envío Asociado</span>
+            <p class="text-sm font-semibold text-white">#{{ pago.envioId }}</p>
+          </div>
+        </div>
+
+        <!-- Associated Factura -->
+        @if (selectedFactura(); as factura) {
+          <div class="border-t border-white/5 pt-4">
+            <div class="flex items-center gap-2 mb-3">
+              <div class="w-1.5 h-1.5 rounded-full bg-purple-400"></div>
+              <span class="text-xs font-semibold text-purple-400 uppercase tracking-wider">Factura Asociada</span>
+            </div>
+            <div class="p-4 rounded-xl bg-purple-500/5 border border-purple-500/15 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-bold text-white">{{ factura.numeroFactura }}</span>
+                <span class="text-[10px] px-2.5 py-1 rounded-lg bg-purple-500/15 text-purple-300 font-semibold border border-purple-500/20">Factura</span>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <span class="text-[10px] text-dark-400 uppercase tracking-wider font-semibold">NIT</span>
+                  <p class="text-sm text-white font-medium">{{ factura.nit }}</p>
+                </div>
+                <div>
+                  <span class="text-[10px] text-dark-400 uppercase tracking-wider font-semibold">Razón Social</span>
+                  <p class="text-sm text-white font-medium">{{ factura.razonSocial }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Close -->
+        <div class="flex justify-end pt-1">
+          <button
+            type="button"
+            (click)="closePagoDetailModal()"
+            class="px-5 py-2.5 text-sm font-semibold text-dark-300 hover:text-white bg-dark-800 hover:bg-dark-700 border border-white/5 rounded-xl transition-all duration-200">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    }
+  </app-modal>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       MODAL: Factura Detail
+       ══════════════════════════════════════════════════════════════ -->
+  <app-modal
+    [isOpen]="showFacturaDetailModal()"
+    title="Detalle de Factura"
+    size="md"
+    (closeModal)="closeFacturaDetailModal()">
+
+    @if (selectedFactura(); as factura) {
+      <div class="space-y-5">
+        <!-- Factura Hero -->
+        <div class="text-center py-5 px-6 rounded-2xl bg-gradient-to-br from-dark-800 to-dark-900 border border-white/5 relative overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-r from-purple-500/5 via-transparent to-brand-500/5"></div>
+          <div class="relative z-10">
+            <p class="text-xs font-semibold text-dark-400 uppercase tracking-widest mb-1">N° Factura</p>
+            <h2 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 via-purple-400 to-brand-400">
+              {{ factura.numeroFactura }}
+            </h2>
+          </div>
+        </div>
+
+        <!-- Factura Details -->
+        <div class="grid grid-cols-2 gap-4">
+          <div class="glass-panel p-4 rounded-xl space-y-1">
+            <span class="text-[10px] font-semibold text-dark-400 uppercase tracking-wider">NIT</span>
+            <p class="text-sm font-semibold text-white">{{ factura.nit }}</p>
+          </div>
+
+          <div class="glass-panel p-4 rounded-xl space-y-1">
+            <span class="text-[10px] font-semibold text-dark-400 uppercase tracking-wider">Razón Social</span>
+            <p class="text-sm font-semibold text-white">{{ factura.razonSocial }}</p>
+          </div>
+
+          <div class="glass-panel p-4 rounded-xl space-y-1">
+            <span class="text-[10px] font-semibold text-dark-400 uppercase tracking-wider">Fecha de Emisión</span>
+            <p class="text-sm font-semibold text-white">{{ formatDate(factura.fecha) }}</p>
+          </div>
+
+          <div class="glass-panel p-4 rounded-xl space-y-1">
+            <span class="text-[10px] font-semibold text-dark-400 uppercase tracking-wider">ID Factura</span>
+            <p class="text-sm font-semibold text-purple-400">#{{ factura.id }}</p>
+          </div>
+        </div>
+
+        <!-- Associated Pago -->
+        @if (selectedPago(); as pago) {
+          <div class="border-t border-white/5 pt-4">
+            <div class="flex items-center gap-2 mb-3">
+              <div class="w-1.5 h-1.5 rounded-full bg-green-400"></div>
+              <span class="text-xs font-semibold text-green-400 uppercase tracking-wider">Pago Asociado</span>
+            </div>
+            <div class="p-4 rounded-xl bg-green-500/5 border border-green-500/15 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-2xl font-bold text-white">Bs. {{ formatCurrency(pago.monto) }}</span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border {{ getMetodoBadgeClasses(pago.metodo) }}">
+                  {{ pago.metodo }}
+                </span>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <span class="text-[10px] text-dark-400 uppercase tracking-wider font-semibold">ID Pago</span>
+                  <p class="text-sm text-brand-400 font-medium">#{{ pago.id }}</p>
+                </div>
+                <div>
+                  <span class="text-[10px] text-dark-400 uppercase tracking-wider font-semibold">Fecha</span>
+                  <p class="text-sm text-white font-medium">{{ formatDate(pago.fecha) }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Close -->
+        <div class="flex justify-end pt-1">
+          <button
+            type="button"
+            (click)="closeFacturaDetailModal()"
+            class="px-5 py-2.5 text-sm font-semibold text-dark-300 hover:text-white bg-dark-800 hover:bg-dark-700 border border-white/5 rounded-xl transition-all duration-200">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    }
+  </app-modal>
+
+  <!-- ── Loading Overlay ─────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="fixed inset-0 z-40 flex items-center justify-center bg-dark-950/60 backdrop-blur-sm">
+      <div class="flex flex-col items-center gap-3">
+        <div class="w-10 h-10 border-3 border-brand-500/30 border-t-brand-500 rounded-full animate-spin"></div>
+        <span class="text-xs font-semibold text-dark-300 animate-pulse">Cargando...</span>
+      </div>
+    </div>
+  }
+</div>

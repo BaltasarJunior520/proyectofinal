@@ -1,0 +1,109 @@
+<div 
+  [class.translate-x-0]="isOpen()"
+  [class.-translate-x-full]="!isOpen()"
+  class="fixed top-0 bottom-0 left-0 z-30 w-64 bg-dark-900 border-r border-white/5 transition-transform duration-300 ease-in-out md:translate-x-0 md:static flex flex-col justify-between"
+>
+  <div>
+    <!-- Logo Header with vibrant gradient -->
+    <div class="h-16 flex items-center px-6 border-b border-white/5 gap-3">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-600 to-brand-400 flex items-center justify-center shadow-lg shadow-brand-500/20">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-white">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.63 9.89a14.98 14.98 0 0 0-6.17 12.12 14.98 14.98 0 0 0 12.13-6.16ZM9.75 9.75c0 .41-.34.75-.75.75a.75.75 0 0 1-.75-.75c0-.41.34-.75.75-.75s.75.34.75.75Z" />
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-brand-300">SGE</h1>
+        <p class="text-[10px] text-dark-400 tracking-wider uppercase font-semibold">Logistics Manager</p>
+      </div>
+    </div>
+
+    <!-- Navigation links with animated SVG icons and sleek hover/active styling -->
+    <nav class="p-4 space-y-1.5 flex-1">
+      <!-- Dashboard Option -->
+      <a 
+        routerLink="/dashboard" 
+        routerLinkActive="bg-brand-500/10 text-brand-400 border-l-2 border-brand-500" 
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="flex items-center px-4 py-2.5 rounded-lg text-dark-300 hover:text-white hover:bg-white/[0.03] transition-all duration-200 group text-sm border-l-2 border-transparent"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+        </svg>
+        <span>Dashboard</span>
+      </a>
+
+      <!-- Clientes Option -->
+      <a 
+        routerLink="/clientes" 
+        routerLinkActive="bg-brand-500/10 text-brand-400 border-l-2 border-brand-500"
+        class="flex items-center px-4 py-2.5 rounded-lg text-dark-300 hover:text-white hover:bg-white/[0.03] transition-all duration-200 group text-sm border-l-2 border-transparent"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.109A11.386 11.386 0 0 1 10.089 20.5c-2.129 0-4.113-.585-5.805-1.604v-.022a4.124 4.124 0 0 1 7.533-2.493M15 19.128v-.003c0-1.112-.285-2.16-.786-3.07M14.25 5.25a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM18.75 8.25a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+        </svg>
+        <span>Clientes</span>
+      </a>
+
+      <!-- Sucursales Option -->
+      <a 
+        routerLink="/sucursales" 
+        routerLinkActive="bg-brand-500/10 text-brand-400 border-l-2 border-brand-500"
+        class="flex items-center px-4 py-2.5 rounded-lg text-dark-300 hover:text-white hover:bg-white/[0.03] transition-all duration-200 group text-sm border-l-2 border-transparent"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.053.196-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
+        </svg>
+        <span>Sucursales</span>
+      </a>
+
+      <!-- Encomiendas Option -->
+      <a 
+        routerLink="/encomiendas" 
+        routerLinkActive="bg-brand-500/10 text-brand-400 border-l-2 border-brand-500"
+        class="flex items-center px-4 py-2.5 rounded-lg text-dark-300 hover:text-white hover:bg-white/[0.03] transition-all duration-200 group text-sm border-l-2 border-transparent"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+        </svg>
+        <span>Encomiendas</span>
+      </a>
+
+      <!-- Envíos Option -->
+      <a 
+        routerLink="/envios" 
+        routerLinkActive="bg-brand-500/10 text-brand-400 border-l-2 border-brand-500"
+        class="flex items-center px-4 py-2.5 rounded-lg text-dark-300 hover:text-white hover:bg-white/[0.03] transition-all duration-200 group text-sm border-l-2 border-transparent"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.129-1.125V11.25M3 14.25h6.75M3 14.25V11.25c0-.621.504-1.125 1.125-1.125H16.5M3 14.25v-2.25m6.75 2.25v-3.375c0-.621.504-1.125 1.125-1.125H16.5M16.5 10.5V18m0-7.5 3.187-3.187a.75.75 0 1 1 1.06 1.06L18 10.5h3.75a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-.75.75H18" />
+        </svg>
+        <span>Envíos & Seguimiento</span>
+      </a>
+
+      <!-- Caja/Finanzas Option -->
+      <a 
+        routerLink="/finanzas" 
+        routerLinkActive="bg-brand-500/10 text-brand-400 border-l-2 border-brand-500"
+        class="flex items-center px-4 py-2.5 rounded-lg text-dark-300 hover:text-white hover:bg-white/[0.03] transition-all duration-200 group text-sm border-l-2 border-transparent"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5h16.5m-16.5 0a1.5 1.5 0 0 1-1.5-1.5V3m1.5 1.5a1.5 1.5 0 0 0-1.5 1.5v13.5m16.5-16.5a1.5 1.5 0 0 0-1.5-1.5V3m1.5 1.5a1.5 1.5 0 0 1 1.5 1.5v13.5M2.25 9h19.5M2.25 13.5h19.5M12 6.75V21" />
+        </svg>
+        <span>Caja & Finanzas</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- User Info Profile footer inside Sidebar -->
+  <div class="p-4 border-t border-white/5 bg-white/[0.01]">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-brand-500 to-brand-300 flex items-center justify-center text-white font-bold border border-white/10 uppercase shadow-md shadow-brand-500/10">
+        {{ authService.username() | slice:0:2 }}
+      </div>
+      <div class="overflow-hidden flex-1">
+        <h4 class="text-sm font-medium text-white truncate">{{ authService.username() }}</h4>
+        <span class="text-[10px] text-brand-400 font-semibold tracking-wide uppercase truncate block">{{ authService.role() }}</span>
+      </div>
+    </div>
+  </div>
+</div>

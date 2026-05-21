@@ -138,9 +138,9 @@ export class FinanzasComponent implements OnInit {
       };
     }
 
-    this.loading.set(true);
     this.finanzasService.createPago(payload).subscribe({
       next: () => {
+        this.loading.set(false);
         this.showPagoModal.set(false);
         this.showSuccess('Pago registrado exitosamente');
         this.loadPagos();
@@ -160,29 +160,9 @@ export class FinanzasComponent implements OnInit {
     this.finanzasService.getPagoById(pago.id!).subscribe({
       next: (fullPago) => {
         this.selectedPago.set(fullPago);
-        // If the pago has an associated factura, resolve it
-        if (fullPago.facturaId) {
-          this.finanzasService.getFacturaById(fullPago.facturaId).subscribe({
-            next: (factura) => {
-              this.selectedFactura.set(factura);
-              this.loading.set(false);
-              this.showPagoDetailModal.set(true);
-            },
-            error: () => {
-              this.selectedFactura.set(null);
-              this.loading.set(false);
-              this.showPagoDetailModal.set(true);
-            }
-          });
-        } else if (fullPago.factura) {
-          this.selectedFactura.set(fullPago.factura);
-          this.loading.set(false);
-          this.showPagoDetailModal.set(true);
-        } else {
-          this.selectedFactura.set(null);
-          this.loading.set(false);
-          this.showPagoDetailModal.set(true);
-        }
+        this.selectedFactura.set(fullPago.factura || null);
+        this.loading.set(false);
+        this.showPagoDetailModal.set(true);
       },
       error: () => {
         this.showError('Error al cargar el detalle del pago');
@@ -196,17 +176,7 @@ export class FinanzasComponent implements OnInit {
     this.finanzasService.getFacturaById(factura.id!).subscribe({
       next: (fullFactura) => {
         this.selectedFactura.set(fullFactura);
-        // Resolve associated pago if available
-        if (fullFactura.pago) {
-          this.selectedPago.set(fullFactura.pago);
-        } else if (fullFactura.pagoId) {
-          this.finanzasService.getPagoById(fullFactura.pagoId).subscribe({
-            next: (pago) => this.selectedPago.set(pago),
-            error: () => this.selectedPago.set(null)
-          });
-        } else {
-          this.selectedPago.set(null);
-        }
+        this.selectedPago.set(fullFactura.pago || null);
         this.loading.set(false);
         this.showFacturaDetailModal.set(true);
       },
@@ -238,7 +208,7 @@ export class FinanzasComponent implements OnInit {
     }).format(value);
   }
 
-  formatDate(date: string | Date): string {
+  formatDate(date?: string | Date): string {
     if (!date) return '—';
     return new Date(date).toLocaleDateString('es-BO', {
       year: 'numeric',

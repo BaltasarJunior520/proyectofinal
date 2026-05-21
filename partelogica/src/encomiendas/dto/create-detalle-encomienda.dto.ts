@@ -5,6 +5,7 @@ export class CreateDetalleEncomiendaDto {
   @ApiProperty({ example: 1, description: 'ID del Tipo de Paquete' })
   @IsInt()
   @IsNotEmpty()
+  @Min(1)
   tipoId: number;
 
   @ApiProperty({ example: 2, description: 'Cantidad de artículos' })

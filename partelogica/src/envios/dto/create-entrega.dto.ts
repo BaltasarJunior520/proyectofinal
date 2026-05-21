@@ -1,10 +1,11 @@
-import { IsInt, IsNotEmpty, IsOptional, IsString, IsDateString, Length } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString, IsDateString, Length, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateEntregaDto {
   @ApiProperty({ example: 1, description: 'ID del Envío' })
   @IsInt()
   @IsNotEmpty()
+  @Min(1)
   envioId: number;
 
   @ApiProperty({ example: '2026-05-20T17:00:00.000Z', description: 'Fecha real de la entrega', required: false })

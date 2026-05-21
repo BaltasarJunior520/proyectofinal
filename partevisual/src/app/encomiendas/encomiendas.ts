@@ -168,7 +168,7 @@ export class EncomiendasComponent implements OnInit {
     const editing = this.editingEncomienda();
 
     if (editing && editing.id) {
-      this.encomiendasService.update(editing.id, payload).subscribe({
+      this.encomiendasService.update(editing.id, payload as any).subscribe({
         next: () => {
           this.successMessage.set('Encomienda actualizada exitosamente');
           this.showModal.set(false);

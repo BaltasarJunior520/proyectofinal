@@ -47,7 +47,7 @@ export class AuthService {
   empleadoId = computed(() => this.userPayload()?.empleado_id || null);
 
   login(username: string, contrasena: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { username, contrasena }).pipe(
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { nombreUsuario: username, password: contrasena }).pipe(
       tap(response => {
         if (response && response.access_token) {
           localStorage.setItem('token', response.access_token);

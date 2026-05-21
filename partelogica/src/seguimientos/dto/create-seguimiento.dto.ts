@@ -1,15 +1,17 @@
-import { IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateSeguimientoDto {
   @ApiProperty({ example: 1, description: 'ID del Envío' })
   @IsInt()
   @IsNotEmpty()
+  @Min(1)
   envioId: number;
 
   @ApiProperty({ example: 2, description: 'ID del Nuevo Estado (1: Registrado, 2: En tránsito, 3: Entregado)' })
   @IsInt()
   @IsNotEmpty()
+  @Min(1)
   estadoId: number;
 
   @ApiProperty({ example: 'Sucursal Cochabamba', description: 'Ubicación física actual del paquete' })

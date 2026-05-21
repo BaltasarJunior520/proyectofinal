@@ -135,25 +135,63 @@ export class EncomiendasService {
   }
 
   async update(id: number, updateEncomiendaDto: UpdateEncomiendaDto): Promise<Encomienda> {
-    // Actualización simple de metadatos de encomienda
-    const encomienda = await this.findOne(id);
-    const { detalles, seguro, ...encomiendaData } = updateEncomiendaDto;
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    this.encomiendasRepository.merge(encomienda, encomiendaData);
-    await this.encomiendasRepository.save(encomienda);
-
-    // Si viene seguro en el update, lo actualizamos o creamos
-    if (seguro) {
-      let seguroEntity = await this.segurosRepository.findOne({ where: { encomiendaId: id } });
-      if (seguroEntity) {
-        this.segurosRepository.merge(seguroEntity, seguro);
-      } else {
-        seguroEntity = this.segurosRepository.create({ ...seguro, encomiendaId: id });
+    try {
+      const encomienda = await queryRunner.manager.findOne(Encomienda, {
+        where: { id },
+        relations: { detalles: true, seguro: true },
+      });
+      if (!encomienda) {
+        throw new NotFoundException(`Encomienda con ID ${id} no encontrada.`);
       }
-      await this.segurosRepository.save(seguroEntity);
-    }
 
-    return this.findOne(id);
+      const { detalles, seguro, ...encomiendaData } = updateEncomiendaDto;
+
+      // Actualizar metadatos de encomienda
+      queryRunner.manager.merge(Encomienda, encomienda, encomiendaData);
+      await queryRunner.manager.save(Encomienda, encomienda);
+
+      // Actualizar detalles si vienen en el update
+      if (detalles) {
+        // Eliminar detalles existentes
+        await queryRunner.manager.delete(DetalleEncomienda, { encomiendaId: id });
+
+        for (const d of detalles) {
+          const tipo = await queryRunner.manager.findOne(TipoPaquete, { where: { id: d.tipoId } });
+          if (!tipo) {
+            throw new NotFoundException(`Tipo de paquete con ID ${d.tipoId} no existe.`);
+          }
+          const detalle = queryRunner.manager.create(DetalleEncomienda, {
+            ...d,
+            encomiendaId: id,
+          });
+          await queryRunner.manager.save(DetalleEncomienda, detalle);
+        }
+      }
+
+      // Actualizar seguro si viene en el update
+      if (seguro) {
+        let seguroEntity = await queryRunner.manager.findOne(Seguro, { where: { encomiendaId: id } });
+        if (seguroEntity) {
+          queryRunner.manager.merge(Seguro, seguroEntity, seguro);
+          await queryRunner.manager.save(Seguro, seguroEntity);
+        } else {
+          const newSeguro = queryRunner.manager.create(Seguro, { ...seguro, encomiendaId: id });
+          await queryRunner.manager.save(Seguro, newSeguro);
+        }
+      }
+
+      await queryRunner.commitTransaction();
+      return this.findOne(id);
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async remove(id: number): Promise<void> {

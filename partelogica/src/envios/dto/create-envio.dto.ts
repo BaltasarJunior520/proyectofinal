@@ -5,6 +5,7 @@ export class CreateEnvioDto {
   @ApiProperty({ example: 1, description: 'ID de la Encomienda' })
   @IsInt()
   @IsNotEmpty()
+  @Min(1)
   encomiendaId: number;
 
   @ApiProperty({ example: 1, description: 'ID de la Sucursal Origen', required: false })
@@ -36,5 +37,6 @@ export class CreateEnvioDto {
   @ApiProperty({ example: 1, description: 'ID del Estado del Envío (1: Registrado, 2: En tránsito, etc.)', required: false })
   @IsInt()
   @IsOptional()
+  @Min(1)
   estadoId?: number;
 }

@@ -7,6 +7,7 @@ export class CreatePagoDto {
   @ApiProperty({ example: 1, description: 'ID del Envío' })
   @IsInt()
   @IsNotEmpty()
+  @Min(1)
   envioId: number;
 
   @ApiProperty({ example: 50.00, description: 'Monto pagado' })

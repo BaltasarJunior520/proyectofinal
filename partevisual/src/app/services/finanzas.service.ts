@@ -9,6 +9,7 @@ export interface Factura {
   nit?: string;
   razonSocial?: string;
   fecha?: string;
+  pago?: Pago;
 }
 
 export interface Pago {

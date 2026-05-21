@@ -11,6 +11,8 @@ export class UsuariosController {
   constructor(private readonly usuariosService: UsuariosService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Crear un nuevo usuario' })
   @ApiResponse({ status: 201, description: 'Usuario creado exitosamente.' })
   @ApiResponse({ status: 400, description: 'Nombre de usuario ya en uso o datos inválidos.' })

@@ -14,10 +14,10 @@ export class CreateClienteDto {
   @IsNotEmpty()
   apellido: string;
 
-  @ApiProperty({ example: '123456', description: 'Cédula de Identidad (único)' })
+  @ApiProperty({ example: '123456', description: 'Cédula de Identidad (único)', required: false })
   @IsString()
-  @IsNotEmpty()
-  ci: string;
+  @IsOptional()
+  ci?: string;
 
   @ApiProperty({ example: '77711111', description: 'Teléfono del cliente', required: false })
   @IsString()

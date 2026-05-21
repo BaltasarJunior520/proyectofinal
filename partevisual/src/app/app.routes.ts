@@ -4,6 +4,9 @@ import { LoginComponent } from './login/login';
 import { MainLayoutComponent } from './layout/main-layout/main-layout';
 import { DashboardComponent } from './dashboard/dashboard';
 import { ClientesComponent } from './clientes/clientes';
+import { EncomiendasComponent } from './encomiendas/encomiendas';
+import { EnviosComponent } from './envios/envios';
+import { FinanzasComponent } from './finanzas/finanzas';
 
 export const routes: Routes = [
   {
@@ -29,15 +32,15 @@ export const routes: Routes = [
       },
       {
         path: 'encomiendas',
-        component: DashboardComponent // Temporary mapping until Phase 7
+        component: EncomiendasComponent
       },
       {
         path: 'envios',
-        component: DashboardComponent // Temporary mapping until Phase 7
+        component: EnviosComponent
       },
       {
         path: 'finanzas',
-        component: DashboardComponent // Temporary mapping until Phase 7
+        component: FinanzasComponent
       },
       {
         path: '',

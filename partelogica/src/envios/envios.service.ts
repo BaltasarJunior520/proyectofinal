@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Envio } from './entities/envio.entity';
@@ -55,8 +55,8 @@ export class EnviosService {
       }
     }
 
-    // 4. Validar Estado
-    const estadoId = createEnvioDto.estadoId ?? 1; // 1: Registrado
+    // 4. Validar Estado (buscar por nombre 'Registrado' como default)
+    const estadoId = createEnvioDto.estadoId ?? await this.getEstadoIdByNombre('Registrado');
     const estado = await this.estadosRepository.findOne({ where: { id: estadoId } });
     if (!estado) {
       throw new NotFoundException(`El estado de envío con ID ${estadoId} no existe.`);
@@ -154,19 +154,28 @@ export class EnviosService {
     });
     await this.entregasRepository.save(entrega);
 
-    // 2. Cambiar estado del envío a 3 (Entregado)
-    envio.estadoId = 3; // 3: Entregado
+    // 2. Cambiar estado del envío a 'Entregado'
+    const entregadoId = await this.getEstadoIdByNombre('Entregado');
+    envio.estadoId = entregadoId;
     await this.enviosRepository.save(envio);
 
     // 3. Crear registro de Seguimiento final
     const seguimiento = this.seguimientosRepository.create({
       envioId: envio.id,
-      estadoId: 3,
+      estadoId: entregadoId,
       ubicacion: 'Destino Final',
       observaciones: `Paquete entregado a: ${createEntregaDto.nombreRecibe} (CI: ${createEntregaDto.ciRecibe}).`,
     });
     await this.seguimientosRepository.save(seguimiento);
 
     return this.findOne(envio.id);
+  }
+
+  private async getEstadoIdByNombre(nombre: string): Promise<number> {
+    const estado = await this.estadosRepository.findOne({ where: { nombre } });
+    if (!estado) {
+      throw new InternalServerErrorException(`Estado de envío '${nombre}' no encontrado en la base de datos.`);
+    }
+    return estado.id;
   }
 }

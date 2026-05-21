@@ -13,11 +13,13 @@ export class CreateEncomiendaDto {
   @ApiProperty({ example: 1, description: 'ID del Cliente Remitente' })
   @IsInt()
   @IsNotEmpty()
+  @Min(1)
   remitenteId: number;
 
   @ApiProperty({ example: 2, description: 'ID del Cliente Destinatario' })
   @IsInt()
   @IsNotEmpty()
+  @Min(1)
   destinatarioId: number;
 
   @ApiProperty({ example: 'Caja con ropa de invierno', description: 'Descripción física de los contenidos', required: false })

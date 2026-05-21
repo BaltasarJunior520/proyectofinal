@@ -1,6 +1,6 @@
 # SGE Logistics - Sistema de Gestión de Encomiendas y Envíos
 
-Sistema web para la gestión integral de encomiendas, envíos, seguimiento, pagos y facturación. Desarrollado con arquitectura de microservicios utilizando NestJS en el backend y Angular en el frontend, con PostgreSQL como base de datos.
+Sistema web para la gestión integral de encomiendas, envíos, seguimiento, pagos y facturación. Expone una **API REST** desarrollada con NestJS, frontend en Angular y base de datos PostgreSQL.
 
 ---
 

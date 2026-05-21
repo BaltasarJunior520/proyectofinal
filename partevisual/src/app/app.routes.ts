@@ -7,6 +7,7 @@ import { ClientesComponent } from './clientes/clientes';
 import { EncomiendasComponent } from './encomiendas/encomiendas';
 import { EnviosComponent } from './envios/envios';
 import { FinanzasComponent } from './finanzas/finanzas';
+import { SucursalesComponent } from './sucursales/sucursales';
 
 export const routes: Routes = [
   {
@@ -28,7 +29,7 @@ export const routes: Routes = [
       },
       {
         path: 'sucursales',
-        component: DashboardComponent // Temporary mapping until Phase 7
+        component: SucursalesComponent
       },
       {
         path: 'encomiendas',

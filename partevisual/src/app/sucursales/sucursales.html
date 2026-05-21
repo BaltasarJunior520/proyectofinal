@@ -1,0 +1,122 @@
+<div class="space-y-6 animate-fade-in">
+
+  <div *ngIf="successMessage()"
+       class="fixed top-6 right-6 z-[100] flex items-center gap-3 px-5 py-3.5 rounded-xl bg-green-500/15 border border-green-500/25 backdrop-blur-xl shadow-2xl shadow-green-500/10 animate-slide-up">
+    <div class="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center flex-shrink-0">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-[18px] h-[18px] text-green-400">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+      </svg>
+    </div>
+    <span class="text-sm font-semibold text-green-300">{{ successMessage() }}</span>
+  </div>
+
+  <div *ngIf="errorMessage()"
+       class="fixed top-6 right-6 z-[100] flex items-center gap-3 px-5 py-3.5 rounded-xl bg-red-500/15 border border-red-500/25 backdrop-blur-xl shadow-2xl shadow-red-500/10 animate-slide-up">
+    <div class="w-8 h-8 rounded-lg bg-red-500/20 flex items-center justify-center flex-shrink-0">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-[18px] h-[18px] text-red-400">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+      </svg>
+    </div>
+    <span class="text-sm font-semibold text-red-300">{{ errorMessage() }}</span>
+  </div>
+
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="space-y-1">
+      <h1 class="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-brand-300 tracking-tight">
+        Gestión de Sucursales
+      </h1>
+      <p class="text-sm text-dark-400">Administra las sucursales de origen y destino de los envíos</p>
+    </div>
+    <button (click)="openCreateModal()"
+            class="flex items-center gap-2.5 px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white text-sm font-semibold rounded-xl shadow-lg shadow-brand-500/25 hover:shadow-brand-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 w-fit">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-[18px] h-[18px]">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+      Nueva Sucursal
+    </button>
+  </div>
+
+  <div class="glass-panel rounded-2xl p-1">
+    <app-data-table
+      [columns]="tableColumns"
+      [rows]="sucursales()"
+      [loading]="loading()"
+      (editClick)="openEditModal($event)"
+      (deleteClick)="deleteSucursal($event)">
+    </app-data-table>
+  </div>
+
+  <app-modal
+    [isOpen]="showModal()"
+    [title]="modalTitle"
+    (closeModal)="closeModal()">
+
+    <form (ngSubmit)="saveSucursal()" class="space-y-5">
+      <div class="space-y-4">
+        <div class="space-y-1.5">
+          <label class="block text-xs font-semibold text-dark-300 tracking-wide">Nombre *</label>
+          <input type="text"
+                 class="glass-input w-full px-4 py-2.5 rounded-xl text-sm placeholder:text-dark-500"
+                 placeholder="Ej: Sucursal Central"
+                 [ngModel]="formNombre()"
+                 (ngModelChange)="formNombre.set($event)"
+                 name="nombre"
+                 required>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="block text-xs font-semibold text-dark-300 tracking-wide">Dirección *</label>
+          <input type="text"
+                 class="glass-input w-full px-4 py-2.5 rounded-xl text-sm placeholder:text-dark-500"
+                 placeholder="Ej: Av. Siempre Viva #123"
+                 [ngModel]="formDireccion()"
+                 (ngModelChange)="formDireccion.set($event)"
+                 name="direccion"
+                 required>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <label class="block text-xs font-semibold text-dark-300 tracking-wide">Ciudad</label>
+            <input type="text"
+                   class="glass-input w-full px-4 py-2.5 rounded-xl text-sm placeholder:text-dark-500"
+                   placeholder="Ej: La Paz"
+                   [ngModel]="formCiudad()"
+                   (ngModelChange)="formCiudad.set($event)"
+                   name="ciudad">
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="block text-xs font-semibold text-dark-300 tracking-wide">Teléfono</label>
+            <input type="text"
+                   class="glass-input w-full px-4 py-2.5 rounded-xl text-sm placeholder:text-dark-500"
+                   placeholder="Ej: 2221111"
+                   [ngModel]="formTelefono()"
+                   (ngModelChange)="formTelefono.set($event)"
+                   name="telefono">
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t border-white/[0.06]"></div>
+
+      <div class="flex items-center justify-end gap-3">
+        <button type="button"
+                (click)="closeModal()"
+                class="px-5 py-2.5 text-sm font-semibold text-dark-300 hover:text-white bg-dark-800 hover:bg-dark-700 border border-white/[0.06] rounded-xl transition-all duration-200">
+          Cancelar
+        </button>
+        <button type="submit"
+                [disabled]="saving()"
+                class="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-brand-500 hover:bg-brand-600 rounded-xl shadow-lg shadow-brand-500/25 hover:shadow-brand-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+          <svg *ngIf="saving()" class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+          </svg>
+          {{ saving() ? 'Guardando...' : (editingSucursal() ? 'Actualizar' : 'Crear Sucursal') }}
+        </button>
+      </div>
+    </form>
+  </app-modal>
+
+</div>

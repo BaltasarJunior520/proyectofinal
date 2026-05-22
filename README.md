@@ -7,25 +7,27 @@ Sistema web para la gestión integral de encomiendas, envíos, seguimiento, pago
 ## Tecnologías Utilizadas
 
 ### Backend (`partelogica/`)
-- **Runtime:** Node.js 20 (Alpine)
-- **Framework:** NestJS 11
-- **ORM:** TypeORM 1.0
+- **Runtime:** Node.js 24.14.1 (Alpine)
+- **Framework:** NestJS 11.1.21
+- **ORM:** TypeORM
 - **Autenticación:** JWT + Passport + bcrypt
 - **Validación:** class-validator + class-transformer
 - **Documentación API:** Swagger (OpenAPI)
-- **Base de Datos:** PostgreSQL 15 (driver pg)
+- **Base de Datos:** PostgreSQL 17 (driver pg)
 
 ### Frontend (`partevisual/`)
-- **Framework:** Angular 19 (standalone components)
+- **Framework:** Angular 21 (standalone components, Signals)
 - **Estilos:** Tailwind CSS
 - **Estado reactivo:** Signals
-- **Autenticación:** JWT (localStorage + interceptor HTTP)
+- **Control flow:** @if/@for (moderno, sin *ngIf/*ngFor)
+- **Autenticación:** JWT (localStorage + interceptor HTTP funcional)
 - **Build:** Vite (Angular CLI)
 
 ### Infraestructura
 - **Contenedores:** Docker + Docker Compose
-- **Base de Datos:** PostgreSQL 15 Alpine
+- **Base de Datos:** PostgreSQL 17 Alpine
 - **Orquestación:** 3 servicios (db, backend, frontend)
+- **Determinismo:** npm ci en builds Docker
 
 ---
 

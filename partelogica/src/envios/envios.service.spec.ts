@@ -9,19 +9,28 @@ import { Sucursal } from '../sucursales/entities/sucursal.entity';
 import { Seguimiento } from '../seguimientos/entities/seguimiento.entity';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 
+interface MockRepository<T = any> {
+  findOne?: jest.Mock<Promise<T | null>, [any]>;
+  find?: jest.Mock<Promise<T[]>, [any]>;
+  create?: jest.Mock<T, [any]>;
+  save?: jest.Mock<T | Promise<T>, [any]>;
+  update?: jest.Mock;
+  delete?: jest.Mock;
+}
+
 describe('EnviosService', () => {
   let service: EnviosService;
-  let enviosRepository: any;
-  let encomiendasRepository: any;
-  let sucursalesRepository: any;
-  let estadosRepository: any;
-  let seguimientosRepository: any;
+  let enviosRepository: MockRepository<Envio>;
+  let encomiendasRepository: MockRepository<Encomienda>;
+  let sucursalesRepository: MockRepository<Sucursal>;
+  let estadosRepository: MockRepository<EstadoEnvio>;
+  let seguimientosRepository: MockRepository<Seguimiento>;
 
   beforeEach(async () => {
     enviosRepository = {
       findOne: jest.fn(),
-      create: jest.fn((data) => data),
-      save: jest.fn((data) => ({ id: 50, ...data })),
+      create: jest.fn((data: Record<string, unknown>) => data),
+      save: jest.fn((data: Record<string, unknown>) => ({ id: 50, ...data })),
     };
     encomiendasRepository = {
       findOne: jest.fn(),
@@ -33,8 +42,8 @@ describe('EnviosService', () => {
       findOne: jest.fn(),
     };
     seguimientosRepository = {
-      create: jest.fn((data) => data),
-      save: jest.fn((data) => data),
+      create: jest.fn((data: Record<string, unknown>) => data),
+      save: jest.fn((data: Record<string, unknown>) => data),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -98,12 +107,18 @@ describe('EnviosService', () => {
       });
 
       // Simular que findOne devuelve el envío creado
-      enviosRepository.findOne.mockImplementation(async (options: any) => {
-        if (options.where && options.where.id === 50) {
-          return { id: 50, ...createDto, estadoId: 1 } as any;
-        }
-        return null;
-      });
+      enviosRepository.findOne.mockImplementation(
+        (options: { where: { id: number } }) => {
+          if (options.where.id === 50) {
+            return Promise.resolve({
+              id: 50,
+              ...createDto,
+              estadoId: 1,
+            } as Envio);
+          }
+          return Promise.resolve(null);
+        },
+      );
 
       const result = await service.create(createDto);
 

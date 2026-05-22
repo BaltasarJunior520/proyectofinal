@@ -6,13 +6,32 @@ import { DetalleEncomienda } from './entities/detalle-encomienda.entity';
 import { Seguro } from './entities/seguro.entity';
 import { TipoPaquete } from './entities/tipo-paquete.entity';
 import { DataSource } from 'typeorm';
-import { Cliente } from '../clientes/entities/cliente.entity';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { CreateEncomiendaDto } from './dto/create-encomienda.dto';
+
+interface MockManager {
+  findOne: jest.Mock;
+  create: jest.Mock;
+  save: jest.Mock;
+}
+
+interface MockQueryRunner {
+  connect: jest.Mock;
+  startTransaction: jest.Mock;
+  commitTransaction: jest.Mock;
+  rollbackTransaction: jest.Mock;
+  release: jest.Mock;
+  manager: MockManager;
+}
+
+interface MockDataSource {
+  createQueryRunner: jest.Mock;
+}
 
 describe('EncomiendasService', () => {
   let service: EncomiendasService;
-  let mockDataSource: any;
-  let mockQueryRunner: any;
+  let mockDataSource: MockDataSource;
+  let mockQueryRunner: MockQueryRunner;
 
   beforeEach(async () => {
     mockQueryRunner = {
@@ -23,8 +42,19 @@ describe('EncomiendasService', () => {
       release: jest.fn().mockResolvedValue(null),
       manager: {
         findOne: jest.fn(),
-        create: jest.fn((entityClass, data) => data),
-        save: jest.fn((entityClass, data) => ({ id: 99, ...data })),
+        create: jest
+          .fn()
+          .mockImplementation(
+            (_entityClass: unknown, data: Record<string, unknown>) => data,
+          ),
+        save: jest
+          .fn()
+          .mockImplementation(
+            (_entityClass: unknown, data: Record<string, unknown>) => ({
+              id: 99,
+              ...data,
+            }),
+          ),
       },
     };
 
@@ -110,9 +140,9 @@ describe('EncomiendasService', () => {
       // Simular que el remitente no existe
       mockQueryRunner.manager.findOne.mockResolvedValueOnce(null);
 
-      await expect(service.create(createDto as any)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.create(createDto as CreateEncomiendaDto),
+      ).rejects.toThrow(NotFoundException);
 
       expect(mockQueryRunner.startTransaction).toHaveBeenCalled();
       expect(mockQueryRunner.rollbackTransaction).toHaveBeenCalled();
@@ -134,9 +164,9 @@ describe('EncomiendasService', () => {
         .mockResolvedValueOnce({ id: 2 }) // Destinatario
         .mockResolvedValueOnce({ id: 5, codigo: 'ENC_EXISTE' }); // Duplicado de código
 
-      await expect(service.create(createDto as any)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        service.create(createDto as CreateEncomiendaDto),
+      ).rejects.toThrow(BadRequestException);
 
       expect(mockQueryRunner.rollbackTransaction).toHaveBeenCalled();
       expect(mockQueryRunner.release).toHaveBeenCalled();

@@ -3,6 +3,19 @@
 Sistema web para la gestión integral de encomiendas, envíos, seguimiento, pagos y facturación. Expone una **API REST** desarrollada con NestJS, frontend en Angular y base de datos PostgreSQL.
 
 ---
+<p align="center">
+  <img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" />
+</p>
+
+## 👥 Información del Grupo
+**Grupo:** 4  
+**Estudiantes:**
+*   Percy Hernán Laime
+*   Danilo Aramayo Garisto
+*   Sandra Carlos Garcia
+*   Baltasar Junior Colque Huarachi
+
+---
 
 ## Tecnologías Utilizadas
 

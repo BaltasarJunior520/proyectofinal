@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToOne, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToOne,
+  OneToMany,
+} from 'typeorm';
 import { Encomienda } from '../../encomiendas/entities/encomienda.entity';
 import { Sucursal } from '../../sucursales/entities/sucursal.entity';
 import { EstadoEnvio } from './estado-envio.entity';

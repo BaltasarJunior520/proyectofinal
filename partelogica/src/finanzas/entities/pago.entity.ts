@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToOne, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToOne,
+  CreateDateColumn,
+} from 'typeorm';
 import { Envio } from '../../envios/entities/envio.entity';
 import { Factura } from './factura.entity';
 

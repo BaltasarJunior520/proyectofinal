@@ -75,7 +75,9 @@ describe('EncomiendasService', () => {
         peso: 5,
         volumen: 0.5,
         valorDeclarado: 100,
-        detalles: [{ tipoId: 1, cantidad: 1, observaciones: 'Sin observaciones' }],
+        detalles: [
+          { tipoId: 1, cantidad: 1, observaciones: 'Sin observaciones' },
+        ],
         seguro: { monto: 10, descripcion: 'Seguro de prueba' },
       };
 
@@ -83,7 +85,7 @@ describe('EncomiendasService', () => {
       mockQueryRunner.manager.findOne
         .mockResolvedValueOnce({ id: 1 }) // Remitente
         .mockResolvedValueOnce({ id: 2 }) // Destinatario
-        .mockResolvedValueOnce(null)      // Duplicado de código (null significa no duplicado)
+        .mockResolvedValueOnce(null) // Duplicado de código (null significa no duplicado)
         .mockResolvedValueOnce({ id: 1 }) // Tipo de paquete en el loop
         .mockResolvedValueOnce({ id: 99, ...createDto }); // Retorno final de findOneInternal
 
@@ -108,7 +110,9 @@ describe('EncomiendasService', () => {
       // Simular que el remitente no existe
       mockQueryRunner.manager.findOne.mockResolvedValueOnce(null);
 
-      await expect(service.create(createDto as any)).rejects.toThrow(NotFoundException);
+      await expect(service.create(createDto as any)).rejects.toThrow(
+        NotFoundException,
+      );
 
       expect(mockQueryRunner.startTransaction).toHaveBeenCalled();
       expect(mockQueryRunner.rollbackTransaction).toHaveBeenCalled();
@@ -130,7 +134,9 @@ describe('EncomiendasService', () => {
         .mockResolvedValueOnce({ id: 2 }) // Destinatario
         .mockResolvedValueOnce({ id: 5, codigo: 'ENC_EXISTE' }); // Duplicado de código
 
-      await expect(service.create(createDto as any)).rejects.toThrow(BadRequestException);
+      await expect(service.create(createDto as any)).rejects.toThrow(
+        BadRequestException,
+      );
 
       expect(mockQueryRunner.rollbackTransaction).toHaveBeenCalled();
       expect(mockQueryRunner.release).toHaveBeenCalled();

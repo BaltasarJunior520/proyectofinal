@@ -1,4 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, OneToOne, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  CreateDateColumn,
+} from 'typeorm';
 import { Cliente } from '../../clientes/entities/cliente.entity';
 import { DetalleEncomienda } from './detalle-encomienda.entity';
 import { Seguro } from './seguro.entity';
@@ -26,7 +35,13 @@ export class Encomienda {
   @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   volumen: number;
 
-  @Column({ name: 'valor_declarado', type: 'decimal', precision: 10, scale: 2, nullable: true })
+  @Column({
+    name: 'valor_declarado',
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    nullable: true,
+  })
   valorDeclarado: number;
 
   @CreateDateColumn({ name: 'fecha_registro', type: 'timestamp' })
@@ -40,7 +55,9 @@ export class Encomienda {
   @JoinColumn({ name: 'destinatario_id' })
   destinatario: Cliente;
 
-  @OneToMany(() => DetalleEncomienda, (detalle) => detalle.encomienda, { cascade: true })
+  @OneToMany(() => DetalleEncomienda, (detalle) => detalle.encomienda, {
+    cascade: true,
+  })
   detalles: DetalleEncomienda[];
 
   @OneToOne(() => Seguro, (seguro) => seguro.encomienda, { cascade: true })

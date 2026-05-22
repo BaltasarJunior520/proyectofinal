@@ -29,7 +29,10 @@ export class EmpleadosService {
     return empleado;
   }
 
-  async update(id: number, updateEmpleadoDto: UpdateEmpleadoDto): Promise<Empleado> {
+  async update(
+    id: number,
+    updateEmpleadoDto: UpdateEmpleadoDto,
+  ): Promise<Empleado> {
     const empleado = await this.findOne(id);
     this.empleadosRepository.merge(empleado, updateEmpleadoDto);
     return this.empleadosRepository.save(empleado);

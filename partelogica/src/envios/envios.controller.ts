@@ -1,5 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { EnviosService } from './envios.service';
 import { CreateEnvioDto } from './dto/create-envio.dto';
 import { UpdateEnvioDto } from './dto/update-envio.dto';
@@ -14,17 +29,32 @@ export class EnviosController {
   constructor(private readonly enviosService: EnviosService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Registrar un nuevo envío físico para una encomienda' })
-  @ApiResponse({ status: 201, description: 'Envío registrado exitosamente y primer seguimiento registrado automáticamente.' })
-  @ApiResponse({ status: 400, description: 'Encomienda ya enviada o datos inválidos.' })
-  @ApiResponse({ status: 404, description: 'Encomienda o sucursales no encontradas.' })
+  @ApiOperation({
+    summary: 'Registrar un nuevo envío físico para una encomienda',
+  })
+  @ApiResponse({
+    status: 201,
+    description:
+      'Envío registrado exitosamente y primer seguimiento registrado automáticamente.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Encomienda ya enviada o datos inválidos.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Encomienda o sucursales no encontradas.',
+  })
   create(@Body() createEnvioDto: CreateEnvioDto) {
     return this.enviosService.create(createEnvioDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Obtener la lista de todos los envíos' })
-  @ApiResponse({ status: 200, description: 'Lista de envíos devuelta exitosamente.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de envíos devuelta exitosamente.',
+  })
   findAll() {
     return this.enviosService.findAll();
   }
@@ -41,7 +71,10 @@ export class EnviosController {
   @ApiOperation({ summary: 'Actualizar la información básica de un envío' })
   @ApiResponse({ status: 200, description: 'Envío actualizado exitosamente.' })
   @ApiResponse({ status: 404, description: 'Envío no encontrado.' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateEnvioDto: UpdateEnvioDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateEnvioDto: UpdateEnvioDto,
+  ) {
     return this.enviosService.update(id, updateEnvioDto);
   }
 
@@ -54,9 +87,19 @@ export class EnviosController {
   }
 
   @Post('entrega')
-  @ApiOperation({ summary: 'Registrar la entrega física y final del envío con firma digital de conformidad' })
-  @ApiResponse({ status: 201, description: 'Entrega registrada, envío actualizado a estado Entregado y registro de seguimiento final creado.' })
-  @ApiResponse({ status: 400, description: 'El envío ya fue entregado previamente.' })
+  @ApiOperation({
+    summary:
+      'Registrar la entrega física y final del envío con firma digital de conformidad',
+  })
+  @ApiResponse({
+    status: 201,
+    description:
+      'Entrega registrada, envío actualizado a estado Entregado y registro de seguimiento final creado.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'El envío ya fue entregado previamente.',
+  })
   @ApiResponse({ status: 404, description: 'Envío no encontrado.' })
   registerEntrega(@Body() createEntregaDto: CreateEntregaDto) {
     return this.enviosService.registerEntrega(createEntregaDto);

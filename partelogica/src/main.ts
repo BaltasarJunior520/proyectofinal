@@ -6,10 +6,8 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Habilitar CORS para comunicación con frontend
   app.enableCors();
 
-  // Habilitar validación global
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -17,7 +15,6 @@ async function bootstrap() {
     }),
   );
 
-  // Configurar documentación Swagger
   const config = new DocumentBuilder()
     .setTitle('Sistema de Gestión de Encomiendas y Envíos (SGE)')
     .setDescription('Documentación de la API del backend de SGE')
@@ -30,4 +27,4 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3000);
 }
-bootstrap();
+void bootstrap();

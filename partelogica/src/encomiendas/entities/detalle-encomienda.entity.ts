@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Encomienda } from './encomienda.entity';
 import { TipoPaquete } from './tipo-paquete.entity';
 
@@ -19,7 +25,9 @@ export class DetalleEncomienda {
   @Column({ type: 'text', nullable: true })
   observaciones: string;
 
-  @ManyToOne(() => Encomienda, (encomienda) => encomienda.detalles, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Encomienda, (encomienda) => encomienda.detalles, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'encomienda_id' })
   encomienda: Encomienda;
 

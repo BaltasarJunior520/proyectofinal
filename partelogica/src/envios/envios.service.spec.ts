@@ -92,7 +92,10 @@ describe('EnviosService', () => {
         .mockResolvedValueOnce({ id: 1, nombre: 'La Paz' })
         .mockResolvedValueOnce({ id: 2, nombre: 'Cochabamba' });
       // Simular que el estado "Registrado" (1) existe
-      estadosRepository.findOne.mockResolvedValue({ id: 1, nombre: 'Registrado' });
+      estadosRepository.findOne.mockResolvedValue({
+        id: 1,
+        nombre: 'Registrado',
+      });
 
       // Simular que findOne devuelve el envío creado
       enviosRepository.findOne.mockImplementation(async (options: any) => {
@@ -106,7 +109,9 @@ describe('EnviosService', () => {
 
       expect(result).toBeDefined();
       expect(result.id).toBe(50);
-      expect(encomiendasRepository.findOne).toHaveBeenCalledWith({ where: { id: 10 } });
+      expect(encomiendasRepository.findOne).toHaveBeenCalledWith({
+        where: { id: 10 },
+      });
       expect(seguimientosRepository.create).toHaveBeenCalled();
       expect(seguimientosRepository.save).toHaveBeenCalled();
     });
@@ -119,7 +124,9 @@ describe('EnviosService', () => {
 
       encomiendasRepository.findOne.mockResolvedValue(null);
 
-      await expect(service.create(createDto)).rejects.toThrow(NotFoundException);
+      await expect(service.create(createDto)).rejects.toThrow(
+        NotFoundException,
+      );
     });
 
     it('debería lanzar BadRequestException si la encomienda ya tiene un envío registrado', async () => {
@@ -131,7 +138,9 @@ describe('EnviosService', () => {
       encomiendasRepository.findOne.mockResolvedValue({ id: 10 });
       enviosRepository.findOne.mockResolvedValue({ id: 80, encomiendaId: 10 }); // Envío previo existente
 
-      await expect(service.create(createDto)).rejects.toThrow(BadRequestException);
+      await expect(service.create(createDto)).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 });

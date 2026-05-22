@@ -10,7 +10,16 @@ import { Sucursal } from '../sucursales/entities/sucursal.entity';
 import { Seguimiento } from '../seguimientos/entities/seguimiento.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Envio, EstadoEnvio, Entrega, Encomienda, Sucursal, Seguimiento])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Envio,
+      EstadoEnvio,
+      Entrega,
+      Encomienda,
+      Sucursal,
+      Seguimiento,
+    ]),
+  ],
   controllers: [EnviosController],
   providers: [EnviosService],
   exports: [EnviosService, TypeOrmModule],

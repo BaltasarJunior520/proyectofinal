@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  CreateDateColumn,
+} from 'typeorm';
 import { Envio } from '../../envios/entities/envio.entity';
 import { EstadoEnvio } from '../../envios/entities/estado-envio.entity';
 
@@ -22,7 +29,9 @@ export class Seguimiento {
   @Column({ type: 'text', nullable: true })
   observaciones: string;
 
-  @ManyToOne(() => Envio, (envio) => envio.seguimientos, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Envio, (envio) => envio.seguimientos, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'envio_id' })
   envio: Envio;
 

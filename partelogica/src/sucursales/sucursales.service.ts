@@ -32,7 +32,10 @@ export class SucursalesService {
     return sucursal;
   }
 
-  async update(id: number, updateSucursalDto: UpdateSucursalDto): Promise<Sucursal> {
+  async update(
+    id: number,
+    updateSucursalDto: UpdateSucursalDto,
+  ): Promise<Sucursal> {
     const sucursal = await this.findOne(id);
     this.sucursalesRepository.merge(sucursal, updateSucursalDto);
     return this.sucursalesRepository.save(sucursal);

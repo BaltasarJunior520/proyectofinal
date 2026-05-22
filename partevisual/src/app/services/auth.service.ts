@@ -20,7 +20,6 @@ export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
   
-  // API URL matching host environment
   private apiUrl = 'http://localhost:3000/auth';
 
   // Signals for reactive authentication state
@@ -36,8 +35,8 @@ export class AuthService {
       const payloadBase64 = activeToken.split('.')[1];
       const decodedJson = atob(payloadBase64);
       return JSON.parse(decodedJson) as UserPayload;
-    } catch (e) {
-      console.error('Failed to decode token payload:', e);
+    } catch {
+      console.error('Failed to decode token payload');
       return null;
     }
   });

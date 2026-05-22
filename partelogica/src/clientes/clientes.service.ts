@@ -1,9 +1,14 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Cliente } from './entities/cliente.entity';
 import { ContactoCliente } from './entities/contacto-cliente.entity';
 import { CreateClienteDto } from './dto/create-cliente.dto';
+import { CreateContactoClienteDto } from './dto/create-contacto-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
 import { Sucursal } from '../sucursales/entities/sucursal.entity';
 
@@ -19,28 +24,23 @@ export class ClientesService {
   ) {}
 
   async create(createClienteDto: CreateClienteDto): Promise<Cliente> {
-    const existing = await this.clientesRepository.findOne({ where: { ci: createClienteDto.ci } });
-    if (existing) {
-      throw new BadRequestException(`El cliente con CI ${createClienteDto.ci} ya existe.`);
-    }
+    await this.ensureCiIsUnique(createClienteDto.ci);
 
     const { contactos, ...clienteData } = createClienteDto;
     const cliente = this.clientesRepository.create(clienteData);
     const savedCliente = await this.clientesRepository.save(cliente);
 
     if (contactos && contactos.length > 0) {
-      const contactosEntities = contactos.map(c => this.contactosRepository.create({
-        ...c,
-        clienteId: savedCliente.id
-      }));
-      await this.contactosRepository.save(contactosEntities);
+      await this.saveContactos(contactos, savedCliente.id);
     }
 
     return this.findOne(savedCliente.id);
   }
 
   async findAll(): Promise<Cliente[]> {
-    return this.clientesRepository.find({ relations: { contactos: true, sucursales: true } });
+    return this.clientesRepository.find({
+      relations: { contactos: true, sucursales: true },
+    });
   }
 
   async findOne(id: number): Promise<Cliente> {
@@ -54,29 +54,24 @@ export class ClientesService {
     return cliente;
   }
 
-  async update(id: number, updateClienteDto: UpdateClienteDto): Promise<Cliente> {
+  async update(
+    id: number,
+    updateClienteDto: UpdateClienteDto,
+  ): Promise<Cliente> {
     const cliente = await this.findOne(id);
-    
+
     if (updateClienteDto.ci && updateClienteDto.ci !== cliente.ci) {
-      const existing = await this.clientesRepository.findOne({ where: { ci: updateClienteDto.ci } });
-      if (existing) {
-        throw new BadRequestException(`El cliente con CI ${updateClienteDto.ci} ya existe.`);
-      }
+      await this.ensureCiIsUnique(updateClienteDto.ci);
     }
 
     const { contactos, ...clienteData } = updateClienteDto;
     this.clientesRepository.merge(cliente, clienteData);
     await this.clientesRepository.save(cliente);
 
-    // Si se envían contactos, reemplazamos los anteriores en cascada
     if (contactos) {
       await this.contactosRepository.delete({ clienteId: id });
       if (contactos.length > 0) {
-        const contactosEntities = contactos.map(c => this.contactosRepository.create({
-          ...c,
-          clienteId: id
-        }));
-        await this.contactosRepository.save(contactosEntities);
+        await this.saveContactos(contactos, id);
       }
     }
 
@@ -88,18 +83,43 @@ export class ClientesService {
     await this.clientesRepository.remove(cliente);
   }
 
-  async associateSucursal(clienteId: number, sucursalId: number): Promise<Cliente> {
+  private async ensureCiIsUnique(ci?: string): Promise<void> {
+    if (!ci) return;
+    const existing = await this.clientesRepository.findOne({ where: { ci } });
+    if (existing) {
+      throw new BadRequestException(`El cliente con CI ${ci} ya existe.`);
+    }
+  }
+
+  private async saveContactos(
+    contactos: CreateContactoClienteDto[],
+    clienteId: number,
+  ): Promise<void> {
+    const entities = contactos.map((c) =>
+      this.contactosRepository.create({ ...c, clienteId }),
+    );
+    await this.contactosRepository.save(entities);
+  }
+
+  async associateSucursal(
+    clienteId: number,
+    sucursalId: number,
+  ): Promise<Cliente> {
     const cliente = await this.findOne(clienteId);
-    const sucursal = await this.sucursalesRepository.findOne({ where: { id: sucursalId } });
+    const sucursal = await this.sucursalesRepository.findOne({
+      where: { id: sucursalId },
+    });
     if (!sucursal) {
-      throw new NotFoundException(`Sucursal con ID ${sucursalId} no encontrada.`);
+      throw new NotFoundException(
+        `Sucursal con ID ${sucursalId} no encontrada.`,
+      );
     }
 
     if (!cliente.sucursales) {
       cliente.sucursales = [];
     }
 
-    if (!cliente.sucursales.some(s => s.id === sucursalId)) {
+    if (!cliente.sucursales.some((s) => s.id === sucursalId)) {
       cliente.sucursales.push(sucursal);
       await this.clientesRepository.save(cliente);
     }
@@ -107,13 +127,21 @@ export class ClientesService {
     return this.findOne(clienteId);
   }
 
-  async dissociateSucursal(clienteId: number, sucursalId: number): Promise<Cliente> {
+  async dissociateSucursal(
+    clienteId: number,
+    sucursalId: number,
+  ): Promise<Cliente> {
     const cliente = await this.findOne(clienteId);
-    if (!cliente.sucursales || !cliente.sucursales.some(s => s.id === sucursalId)) {
-      throw new BadRequestException(`El cliente no está asociado a la sucursal con ID ${sucursalId}.`);
+    if (
+      !cliente.sucursales ||
+      !cliente.sucursales.some((s) => s.id === sucursalId)
+    ) {
+      throw new BadRequestException(
+        `El cliente no está asociado a la sucursal con ID ${sucursalId}.`,
+      );
     }
 
-    cliente.sucursales = cliente.sucursales.filter(s => s.id !== sucursalId);
+    cliente.sucursales = cliente.sucursales.filter((s) => s.id !== sucursalId);
     await this.clientesRepository.save(cliente);
     return this.findOne(clienteId);
   }

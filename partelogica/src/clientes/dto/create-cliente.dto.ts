@@ -1,4 +1,11 @@
-import { IsString, IsNotEmpty, IsOptional, IsEmail, IsArray, ValidateNested, Length } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsEmail,
+  IsArray,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { CreateContactoClienteDto } from './create-contacto-cliente.dto';
@@ -14,27 +21,47 @@ export class CreateClienteDto {
   @IsNotEmpty()
   apellido: string;
 
-  @ApiProperty({ example: '123456', description: 'Cédula de Identidad (único)', required: false })
+  @ApiProperty({
+    example: '123456',
+    description: 'Cédula de Identidad (único)',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   ci?: string;
 
-  @ApiProperty({ example: '77711111', description: 'Teléfono del cliente', required: false })
+  @ApiProperty({
+    example: '77711111',
+    description: 'Teléfono del cliente',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   telefono?: string;
 
-  @ApiProperty({ example: 'juan@gmail.com', description: 'Email del cliente', required: false })
+  @ApiProperty({
+    example: 'juan@gmail.com',
+    description: 'Email del cliente',
+    required: false,
+  })
   @IsEmail()
   @IsOptional()
   email?: string;
 
-  @ApiProperty({ example: 'La Paz', description: 'Dirección del cliente', required: false })
+  @ApiProperty({
+    example: 'La Paz',
+    description: 'Dirección del cliente',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   direccion?: string;
 
-  @ApiProperty({ type: [CreateContactoClienteDto], description: 'Contactos asociados al cliente', required: false })
+  @ApiProperty({
+    type: [CreateContactoClienteDto],
+    description: 'Contactos asociados al cliente',
+    required: false,
+  })
   @IsArray()
   @IsOptional()
   @ValidateNested({ each: true })

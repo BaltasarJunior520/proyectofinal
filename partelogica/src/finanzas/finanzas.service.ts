@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Pago } from './entities/pago.entity';
@@ -18,18 +18,19 @@ export class FinanzasService {
   ) {}
 
   async createPago(createPagoDto: CreatePagoDto): Promise<Pago> {
-    // 1. Validar Envío
-    const envio = await this.enviosRepository.findOne({ where: { id: createPagoDto.envioId } });
+    const envio = await this.enviosRepository.findOne({
+      where: { id: createPagoDto.envioId },
+    });
     if (!envio) {
-      throw new NotFoundException(`El envío con ID ${createPagoDto.envioId} no existe.`);
+      throw new NotFoundException(
+        `El envío con ID ${createPagoDto.envioId} no existe.`,
+      );
     }
 
-    // 2. Crear Pago
     const { factura, ...pagoData } = createPagoDto;
     const pago = this.pagosRepository.create(pagoData);
     const savedPago = await this.pagosRepository.save(pago);
 
-    // 3. Crear Factura si viene en la petición
     if (factura) {
       const facturaEntity = this.facturasRepository.create({
         ...factura,
@@ -42,7 +43,9 @@ export class FinanzasService {
   }
 
   async findAllPagos(): Promise<Pago[]> {
-    return this.pagosRepository.find({ relations: { envio: true, factura: true } });
+    return this.pagosRepository.find({
+      relations: { envio: true, factura: true },
+    });
   }
 
   async findPagoOne(id: number): Promise<Pago> {

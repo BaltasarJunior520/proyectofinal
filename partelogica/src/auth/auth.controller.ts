@@ -11,8 +11,14 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Iniciar sesión y obtener token JWT' })
-  @ApiResponse({ status: 200, description: 'Token de acceso JWT generado exitosamente.' })
-  @ApiResponse({ status: 401, description: 'Credenciales inválidas o cuenta inactiva.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Token de acceso JWT generado exitosamente.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Credenciales inválidas o cuenta inactiva.',
+  })
   login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }

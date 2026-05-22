@@ -1,5 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { ClientesService } from './clientes.service';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
@@ -15,14 +30,20 @@ export class ClientesController {
   @Post()
   @ApiOperation({ summary: 'Crear un nuevo cliente' })
   @ApiResponse({ status: 201, description: 'Cliente creado exitosamente.' })
-  @ApiResponse({ status: 400, description: 'CI ya registrada o datos de entrada inválidos.' })
+  @ApiResponse({
+    status: 400,
+    description: 'CI ya registrada o datos de entrada inválidos.',
+  })
   create(@Body() createClienteDto: CreateClienteDto) {
     return this.clientesService.create(createClienteDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Obtener todos los clientes' })
-  @ApiResponse({ status: 200, description: 'Lista de clientes devuelta exitosamente.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de clientes devuelta exitosamente.',
+  })
   findAll() {
     return this.clientesService.findAll();
   }
@@ -37,9 +58,15 @@ export class ClientesController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar un cliente' })
-  @ApiResponse({ status: 200, description: 'Cliente actualizado exitosamente.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Cliente actualizado exitosamente.',
+  })
   @ApiResponse({ status: 404, description: 'Cliente no encontrado.' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateClienteDto: UpdateClienteDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateClienteDto: UpdateClienteDto,
+  ) {
     return this.clientesService.update(id, updateClienteDto);
   }
 
@@ -53,8 +80,14 @@ export class ClientesController {
 
   @Post(':id/sucursales/:sucursalId')
   @ApiOperation({ summary: 'Asociar una sucursal al cliente' })
-  @ApiResponse({ status: 200, description: 'Asociación realizada exitosamente.' })
-  @ApiResponse({ status: 404, description: 'Cliente o Sucursal no encontrado.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Asociación realizada exitosamente.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Cliente o Sucursal no encontrado.',
+  })
   associateSucursal(
     @Param('id', ParseIntPipe) id: number,
     @Param('sucursalId', ParseIntPipe) sucursalId: number,
@@ -64,8 +97,14 @@ export class ClientesController {
 
   @Delete(':id/sucursales/:sucursalId')
   @ApiOperation({ summary: 'Desasociar una sucursal del cliente' })
-  @ApiResponse({ status: 200, description: 'Desasociación realizada exitosamente.' })
-  @ApiResponse({ status: 404, description: 'Cliente o Sucursal no encontrado.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Desasociación realizada exitosamente.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Cliente o Sucursal no encontrado.',
+  })
   dissociateSucursal(
     @Param('id', ParseIntPipe) id: number,
     @Param('sucursalId', ParseIntPipe) sucursalId: number,

@@ -1,5 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { SucursalesService } from './sucursales.service';
 import { CreateSucursalDto } from './dto/create-sucursal.dto';
 import { UpdateSucursalDto } from './dto/update-sucursal.dto';
@@ -22,7 +37,10 @@ export class SucursalesController {
 
   @Get()
   @ApiOperation({ summary: 'Obtener todas las sucursales' })
-  @ApiResponse({ status: 200, description: 'Lista de sucursales devuelta exitosamente.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de sucursales devuelta exitosamente.',
+  })
   findAll() {
     return this.sucursalesService.findAll();
   }
@@ -37,9 +55,15 @@ export class SucursalesController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar una sucursal' })
-  @ApiResponse({ status: 200, description: 'Sucursal actualizada exitosamente.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Sucursal actualizada exitosamente.',
+  })
   @ApiResponse({ status: 404, description: 'Sucursal no encontrada.' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateSucursalDto: UpdateSucursalDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateSucursalDto: UpdateSucursalDto,
+  ) {
     return this.sucursalesService.update(id, updateSucursalDto);
   }
 

@@ -1,5 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { EmpleadosService } from './empleados.service';
 import { CreateEmpleadoDto } from './dto/create-empleado.dto';
 import { UpdateEmpleadoDto } from './dto/update-empleado.dto';
@@ -21,7 +36,10 @@ export class EmpleadosController {
 
   @Get()
   @ApiOperation({ summary: 'Obtener todos los empleados' })
-  @ApiResponse({ status: 200, description: 'Lista de empleados devuelta exitosamente.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de empleados devuelta exitosamente.',
+  })
   findAll() {
     return this.empleadosService.findAll();
   }
@@ -36,9 +54,15 @@ export class EmpleadosController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar un empleado' })
-  @ApiResponse({ status: 200, description: 'Empleado actualizado exitosamente.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Empleado actualizado exitosamente.',
+  })
   @ApiResponse({ status: 404, description: 'Empleado no encontrado.' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateEmpleadoDto: UpdateEmpleadoDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateEmpleadoDto: UpdateEmpleadoDto,
+  ) {
     return this.empleadosService.update(id, updateEmpleadoDto);
   }
 

@@ -8,18 +8,29 @@ export class CreateSeguimientoDto {
   @Min(1)
   envioId: number;
 
-  @ApiProperty({ example: 2, description: 'ID del Nuevo Estado (1: Registrado, 2: En tránsito, 3: Entregado)' })
+  @ApiProperty({
+    example: 2,
+    description:
+      'ID del Nuevo Estado (1: Registrado, 2: En tránsito, 3: Entregado)',
+  })
   @IsInt()
   @IsNotEmpty()
   @Min(1)
   estadoId: number;
 
-  @ApiProperty({ example: 'Sucursal Cochabamba', description: 'Ubicación física actual del paquete' })
+  @ApiProperty({
+    example: 'Sucursal Cochabamba',
+    description: 'Ubicación física actual del paquete',
+  })
   @IsString()
   @IsNotEmpty()
   ubicacion: string;
 
-  @ApiProperty({ example: 'Llegada del paquete a la sucursal de destino', description: 'Observaciones del seguimiento', required: false })
+  @ApiProperty({
+    example: 'Llegada del paquete a la sucursal de destino',
+    description: 'Observaciones del seguimiento',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   observaciones?: string;

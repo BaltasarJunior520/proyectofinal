@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Envio } from './entities/envio.entity';
@@ -29,63 +34,34 @@ export class EnviosService {
   ) {}
 
   async create(createEnvioDto: CreateEnvioDto): Promise<Envio> {
-    // 1. Validar Encomienda
-    const encomienda = await this.encomiendasRepository.findOne({ where: { id: createEnvioDto.encomiendaId } });
-    if (!encomienda) {
-      throw new NotFoundException(`La encomienda con ID ${createEnvioDto.encomiendaId} no existe.`);
-    }
+    await this.validateEncomiendaExists(createEnvioDto.encomiendaId);
+    await this.ensureNoExistingEnvio(createEnvioDto.encomiendaId);
+    await this.validateSucursalesExistence(
+      createEnvioDto.sucursalOrigenId,
+      createEnvioDto.sucursalDestinoId,
+    );
 
-    // 2. Validar que no tenga ya un envío
-    const existingEnvio = await this.enviosRepository.findOne({ where: { encomiendaId: createEnvioDto.encomiendaId } });
-    if (existingEnvio) {
-      throw new BadRequestException(`La encomienda con ID ${createEnvioDto.encomiendaId} ya tiene un envío registrado (Envío ID ${existingEnvio.id}).`);
-    }
+    const estadoId =
+      createEnvioDto.estadoId ?? (await this.getEstadoIdByNombre('Registrado'));
+    await this.validateEstadoExists(estadoId);
 
-    // 3. Validar Sucursales
-    if (createEnvioDto.sucursalOrigenId) {
-      const origen = await this.sucursalesRepository.findOne({ where: { id: createEnvioDto.sucursalOrigenId } });
-      if (!origen) {
-        throw new NotFoundException(`La sucursal de origen con ID ${createEnvioDto.sucursalOrigenId} no existe.`);
-      }
-    }
-    if (createEnvioDto.sucursalDestinoId) {
-      const destino = await this.sucursalesRepository.findOne({ where: { id: createEnvioDto.sucursalDestinoId } });
-      if (!destino) {
-        throw new NotFoundException(`La sucursal de destino con ID ${createEnvioDto.sucursalDestinoId} no existe.`);
-      }
-    }
-
-    // 4. Validar Estado (buscar por nombre 'Registrado' como default)
-    const estadoId = createEnvioDto.estadoId ?? await this.getEstadoIdByNombre('Registrado');
-    const estado = await this.estadosRepository.findOne({ where: { id: estadoId } });
-    if (!estado) {
-      throw new NotFoundException(`El estado de envío con ID ${estadoId} no existe.`);
-    }
-
-    // 5. Crear Envío
     const envio = this.enviosRepository.create({
       ...createEnvioDto,
       estadoId,
-      fechaEnvio: createEnvioDto.fechaEnvio ? new Date(createEnvioDto.fechaEnvio) : new Date(),
-      fechaEstimada: createEnvioDto.fechaEstimada ? new Date(createEnvioDto.fechaEstimada) : null,
+      fechaEnvio: createEnvioDto.fechaEnvio
+        ? new Date(createEnvioDto.fechaEnvio)
+        : new Date(),
+      fechaEstimada: createEnvioDto.fechaEstimada
+        ? new Date(createEnvioDto.fechaEstimada)
+        : null,
     });
     const savedEnvio = await this.enviosRepository.save(envio);
 
-    // 6. Crear primer Seguimiento de forma automática
-    let ubicacionInicial = 'Origen';
-    if (createEnvioDto.sucursalOrigenId) {
-      const origenSucursal = await this.sucursalesRepository.findOne({ where: { id: createEnvioDto.sucursalOrigenId } });
-      if (origenSucursal) {
-        ubicacionInicial = origenSucursal.nombre;
-      }
-    }
-    const seguimientoInicial = this.seguimientosRepository.create({
-      envioId: savedEnvio.id,
+    await this.createInitialSeguimiento(
+      savedEnvio.id,
       estadoId,
-      ubicacion: ubicacionInicial,
-      observaciones: 'Envío registrado en el sistema.',
-    });
-    await this.seguimientosRepository.save(seguimientoInicial);
+      createEnvioDto.sucursalOrigenId,
+    );
 
     return this.findOne(savedEnvio.id);
   }
@@ -125,9 +101,13 @@ export class EnviosService {
     const envio = await this.findOne(id);
 
     if (updateEnvioDto.estadoId) {
-      const estado = await this.estadosRepository.findOne({ where: { id: updateEnvioDto.estadoId } });
+      const estado = await this.estadosRepository.findOne({
+        where: { id: updateEnvioDto.estadoId },
+      });
       if (!estado) {
-        throw new NotFoundException(`Estado de envío con ID ${updateEnvioDto.estadoId} no existe.`);
+        throw new NotFoundException(
+          `Estado de envío con ID ${updateEnvioDto.estadoId} no existe.`,
+        );
       }
     }
 
@@ -144,22 +124,23 @@ export class EnviosService {
   async registerEntrega(createEntregaDto: CreateEntregaDto): Promise<Envio> {
     const envio = await this.findOne(createEntregaDto.envioId);
     if (envio.entrega) {
-      throw new BadRequestException(`El envío con ID ${createEntregaDto.envioId} ya ha sido entregado.`);
+      throw new BadRequestException(
+        `El envío con ID ${createEntregaDto.envioId} ya ha sido entregado.`,
+      );
     }
 
-    // 1. Crear registro de Entrega
     const entrega = this.entregasRepository.create({
       ...createEntregaDto,
-      fechaEntrega: createEntregaDto.fechaEntrega ? new Date(createEntregaDto.fechaEntrega) : new Date(),
+      fechaEntrega: createEntregaDto.fechaEntrega
+        ? new Date(createEntregaDto.fechaEntrega)
+        : new Date(),
     });
     await this.entregasRepository.save(entrega);
 
-    // 2. Cambiar estado del envío a 'Entregado'
     const entregadoId = await this.getEstadoIdByNombre('Entregado');
     envio.estadoId = entregadoId;
     await this.enviosRepository.save(envio);
 
-    // 3. Crear registro de Seguimiento final
     const seguimiento = this.seguimientosRepository.create({
       envioId: envio.id,
       estadoId: entregadoId,
@@ -171,10 +152,94 @@ export class EnviosService {
     return this.findOne(envio.id);
   }
 
+  private async validateEncomiendaExists(encomiendaId: number): Promise<void> {
+    const encomienda = await this.encomiendasRepository.findOne({
+      where: { id: encomiendaId },
+    });
+    if (!encomienda) {
+      throw new NotFoundException(
+        `La encomienda con ID ${encomiendaId} no existe.`,
+      );
+    }
+  }
+
+  private async ensureNoExistingEnvio(encomiendaId: number): Promise<void> {
+    const existing = await this.enviosRepository.findOne({
+      where: { encomiendaId },
+    });
+    if (existing) {
+      throw new BadRequestException(
+        `La encomienda con ID ${encomiendaId} ya tiene un envío registrado (Envío ID ${existing.id}).`,
+      );
+    }
+  }
+
+  private async validateSucursalesExistence(
+    sucursalOrigenId?: number,
+    sucursalDestinoId?: number,
+  ): Promise<void> {
+    if (sucursalOrigenId) {
+      const origen = await this.sucursalesRepository.findOne({
+        where: { id: sucursalOrigenId },
+      });
+      if (!origen) {
+        throw new NotFoundException(
+          `La sucursal de origen con ID ${sucursalOrigenId} no existe.`,
+        );
+      }
+    }
+    if (sucursalDestinoId) {
+      const destino = await this.sucursalesRepository.findOne({
+        where: { id: sucursalDestinoId },
+      });
+      if (!destino) {
+        throw new NotFoundException(
+          `La sucursal de destino con ID ${sucursalDestinoId} no existe.`,
+        );
+      }
+    }
+  }
+
+  private async validateEstadoExists(estadoId: number): Promise<void> {
+    const estado = await this.estadosRepository.findOne({
+      where: { id: estadoId },
+    });
+    if (!estado) {
+      throw new NotFoundException(
+        `El estado de envío con ID ${estadoId} no existe.`,
+      );
+    }
+  }
+
+  private async createInitialSeguimiento(
+    envioId: number,
+    estadoId: number,
+    sucursalOrigenId?: number,
+  ): Promise<void> {
+    let ubicacionInicial = 'Origen';
+    if (sucursalOrigenId) {
+      const origenSucursal = await this.sucursalesRepository.findOne({
+        where: { id: sucursalOrigenId },
+      });
+      if (origenSucursal) {
+        ubicacionInicial = origenSucursal.nombre;
+      }
+    }
+    const seguimiento = this.seguimientosRepository.create({
+      envioId,
+      estadoId,
+      ubicacion: ubicacionInicial,
+      observaciones: 'Envío registrado en el sistema.',
+    });
+    await this.seguimientosRepository.save(seguimiento);
+  }
+
   private async getEstadoIdByNombre(nombre: string): Promise<number> {
     const estado = await this.estadosRepository.findOne({ where: { nombre } });
     if (!estado) {
-      throw new InternalServerErrorException(`Estado de envío '${nombre}' no encontrado en la base de datos.`);
+      throw new InternalServerErrorException(
+        `Estado de envío '${nombre}' no encontrado en la base de datos.`,
+      );
     }
     return estado.id;
   }

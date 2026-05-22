@@ -8,7 +8,14 @@ import { Seguro } from './entities/seguro.entity';
 import { TipoPaquete } from './entities/tipo-paquete.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Encomienda, DetalleEncomienda, Seguro, TipoPaquete])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Encomienda,
+      DetalleEncomienda,
+      Seguro,
+      TipoPaquete,
+    ]),
+  ],
   controllers: [EncomiendasController],
   providers: [EncomiendasService],
   exports: [EncomiendasService, TypeOrmModule],

@@ -14,7 +14,11 @@ export class CreateDetalleEncomiendaDto {
   @Min(1)
   cantidad: number;
 
-  @ApiProperty({ example: 'Cajas medianas', description: 'Observaciones del detalle', required: false })
+  @ApiProperty({
+    example: 'Cajas medianas',
+    description: 'Observaciones del detalle',
+    required: false,
+  })
   @IsString()
   @IsOptional()
   observaciones?: string;

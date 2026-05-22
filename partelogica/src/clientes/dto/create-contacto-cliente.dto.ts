@@ -1,8 +1,11 @@
-import { IsString, IsNotEmpty, IsOptional, Length } from 'class-validator';
+import { IsString, IsNotEmpty, Length } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateContactoClienteDto {
-  @ApiProperty({ example: 'Emergencia', description: 'Tipo de contacto (Emergencia, Familiar, etc.)' })
+  @ApiProperty({
+    example: 'Emergencia',
+    description: 'Tipo de contacto (Emergencia, Familiar, etc.)',
+  })
   @IsString()
   @IsNotEmpty()
   tipo: string;

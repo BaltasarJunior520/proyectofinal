@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -20,14 +20,14 @@ export class LoginComponent {
     contrasena: ['', [Validators.required]]
   });
 
-  errorMessage = '';
-  isLoading = false;
+  errorMessage = signal('');
+  isLoading = signal(false);
 
   onSubmit(): void {
     if (this.loginForm.invalid) return;
 
-    this.isLoading = true;
-    this.errorMessage = '';
+    this.isLoading.set(true);
+    this.errorMessage.set('');
     const { username, contrasena } = this.loginForm.value;
 
     this.authService.login(username, contrasena).subscribe({
@@ -35,9 +35,8 @@ export class LoginComponent {
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
-        this.isLoading = false;
-        console.error('Login error details:', err);
-        this.errorMessage = err.error?.message || 'Credenciales inválidas. Por favor, intente de nuevo.';
+        this.isLoading.set(false);
+        this.errorMessage.set(err.error?.message || 'Credenciales inválidas. Por favor, intente de nuevo.');
       }
     });
   }

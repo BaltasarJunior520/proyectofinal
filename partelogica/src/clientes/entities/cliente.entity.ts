@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, JoinTable, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  ManyToMany,
+  JoinTable,
+  CreateDateColumn,
+} from 'typeorm';
 import { ContactoCliente } from './contacto-cliente.entity';
 import { Sucursal } from '../../sucursales/entities/sucursal.entity';
 
@@ -28,7 +36,9 @@ export class Cliente {
   @CreateDateColumn({ name: 'fecha_registro', type: 'timestamp' })
   fechaRegistro: Date;
 
-  @OneToMany(() => ContactoCliente, (contacto) => contacto.cliente, { cascade: true })
+  @OneToMany(() => ContactoCliente, (contacto) => contacto.cliente, {
+    cascade: true,
+  })
   contactos: ContactoCliente[];
 
   @ManyToMany(() => Sucursal, (sucursal) => sucursal.clientes)

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Usuario } from './entities/usuario.entity';
@@ -13,10 +17,7 @@ export class UsuariosService {
   ) {}
 
   async create(createUsuarioDto: CreateUsuarioDto): Promise<Usuario> {
-    const existing = await this.findByUsername(createUsuarioDto.nombreUsuario);
-    if (existing) {
-      throw new BadRequestException('El nombre de usuario ya está en uso.');
-    }
+    await this.ensureUsernameIsUnique(createUsuarioDto.nombreUsuario);
     const usuario = this.usuariosRepository.create(createUsuarioDto);
     return this.usuariosRepository.save(usuario);
   }
@@ -43,14 +44,17 @@ export class UsuariosService {
     });
   }
 
-  async update(id: number, updateUsuarioDto: UpdateUsuarioDto): Promise<Usuario> {
+  async update(
+    id: number,
+    updateUsuarioDto: UpdateUsuarioDto,
+  ): Promise<Usuario> {
     const usuario = await this.findOne(id);
 
-    if (updateUsuarioDto.nombreUsuario && updateUsuarioDto.nombreUsuario !== usuario.nombreUsuario) {
-      const existing = await this.findByUsername(updateUsuarioDto.nombreUsuario);
-      if (existing) {
-        throw new BadRequestException('El nombre de usuario ya está en uso.');
-      }
+    if (
+      updateUsuarioDto.nombreUsuario &&
+      updateUsuarioDto.nombreUsuario !== usuario.nombreUsuario
+    ) {
+      await this.ensureUsernameIsUnique(updateUsuarioDto.nombreUsuario);
     }
 
     this.usuariosRepository.merge(usuario, updateUsuarioDto);
@@ -60,5 +64,12 @@ export class UsuariosService {
   async remove(id: number): Promise<void> {
     const usuario = await this.findOne(id);
     await this.usuariosRepository.remove(usuario);
+  }
+
+  private async ensureUsernameIsUnique(nombreUsuario: string): Promise<void> {
+    const existing = await this.findByUsername(nombreUsuario);
+    if (existing) {
+      throw new BadRequestException('El nombre de usuario ya está en uso.');
+    }
   }
 }

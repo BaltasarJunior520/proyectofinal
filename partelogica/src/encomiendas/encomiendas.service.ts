@@ -36,11 +36,11 @@ export class EncomiendasService {
 
     try {
       await this.validateClientesExistence(
-        queryRunner,
+        queryRunner.manager,
         createEncomiendaDto.remitenteId,
         createEncomiendaDto.destinatarioId,
       );
-      await this.ensureCodigoIsUnique(queryRunner, createEncomiendaDto.codigo);
+      await this.ensureCodigoIsUnique(queryRunner.manager, createEncomiendaDto.codigo);
 
       const { detalles, seguro, ...encomiendaData } = createEncomiendaDto;
       const encomienda = queryRunner.manager.create(Encomienda, encomiendaData);
@@ -49,8 +49,8 @@ export class EncomiendasService {
         encomienda,
       );
 
-      await this.createDetalles(queryRunner, detalles, savedEncomienda.id);
-      await this.createSeguroIfPresent(queryRunner, seguro, savedEncomienda.id);
+      await this.createDetalles(queryRunner.manager, detalles, savedEncomienda.id);
+      await this.createSeguroIfPresent(queryRunner.manager, seguro, savedEncomienda.id);
 
       await queryRunner.commitTransaction();
       return await this.findOneInternal(
@@ -137,11 +137,11 @@ export class EncomiendasService {
         await queryRunner.manager.delete(DetalleEncomienda, {
           encomiendaId: id,
         });
-        await this.createDetalles(queryRunner, detalles, id);
+        await this.createDetalles(queryRunner.manager, detalles, id);
       }
 
       if (seguro) {
-        await this.upsertSeguro(queryRunner, seguro, id);
+        await this.upsertSeguro(queryRunner.manager, seguro, id);
       }
 
       await queryRunner.commitTransaction();

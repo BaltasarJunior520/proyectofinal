@@ -21,6 +21,10 @@ export class ClientesComponent implements OnInit {
   editingCliente = signal<Cliente | null>(null);
   saving = signal(false);
 
+  // ── Contactos View ─────────────────────────────────────
+  showContactosModal = signal(false);
+  selectedCliente = signal<Cliente | null>(null);
+
   // ── Toast / Feedback Signals ───────────────────────────
   successMessage = signal('');
   errorMessage = signal('');
@@ -167,6 +171,17 @@ export class ClientesComponent implements OnInit {
         console.error('delete error:', err);
       }
     });
+  }
+
+  // ── View Contacts ──────────────────────────────────────
+  viewContactos(cliente: Cliente): void {
+    this.selectedCliente.set(cliente);
+    this.showContactosModal.set(true);
+  }
+
+  closeContactosModal(): void {
+    this.showContactosModal.set(false);
+    this.selectedCliente.set(null);
   }
 
   // ── Dynamic Contacts ───────────────────────────────────

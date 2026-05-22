@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/bin/sh
 
 set -e
 
 # Obtener directorio del script o usar /basededatos si es Docker
-DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+DIR="$(cd "$(dirname "${BASH_SOURCE:-$0}")" && pwd)"
 if [ -d "/basededatos" ]; then
   SQL_DIR="/basededatos"
 else

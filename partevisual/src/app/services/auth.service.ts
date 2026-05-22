@@ -11,6 +11,9 @@ export interface UserPayload {
   username: string;
   rol: string;
   empleado_id: number;
+  exp: number;
+  iat: number;
+  sub: number;
 }
 
 @Injectable({
@@ -41,6 +44,12 @@ export class AuthService {
     }
   });
 
+  isTokenExpired = computed(() => {
+    const payload = this.userPayload();
+    if (!payload?.exp) return true;
+    return Date.now() >= payload.exp * 1000;
+  });
+
   username = computed(() => this.userPayload()?.username || '');
   role = computed(() => this.userPayload()?.rol || '');
   empleadoId = computed(() => this.userPayload()?.empleado_id || null);
@@ -60,5 +69,10 @@ export class AuthService {
     localStorage.removeItem('token');
     this.token.set(null);
     this.router.navigate(['/login']);
+  }
+
+  clearSession(): void {
+    localStorage.removeItem('token');
+    this.token.set(null);
   }
 }
